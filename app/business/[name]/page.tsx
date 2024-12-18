@@ -20,9 +20,9 @@ import { categories, dummyGeminiData } from "@/constants";
 import LocationStrategy from "@/components/Business/LocationStrategy";
 
 const MomosBusinessInsights = () => {
-  //   const [insights, setInsights] = useState(dummyGeminiData);
-  const [insights, setInsights] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [insights, setInsights] = useState(dummyGeminiData);
+  // const [insights, setInsights] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const { name } = useParams();
   const searchParams = useSearchParams();
@@ -45,6 +45,7 @@ const MomosBusinessInsights = () => {
         )} business in India. the prices should start from very minimum prices 
         Create only a structured JSON response with the following details:
         {
+          businessName:"short hand Business name"
           "initialInvestment": {
             "startupCost": "Range in ₹",
             "monthlyOperationalCost": "Range in ₹"
@@ -177,9 +178,8 @@ const MomosBusinessInsights = () => {
               <div>
                 <h1 className="text-4xl font-bold">
                   {" "}
-                  {decodeURIComponent(name.replace(/\s+/g, " "))
-                    .toLowerCase()
-                    .replace(/^\w/, (c) => c.toUpperCase())}{" "}
+                  {insights?.businessName}
+                  <br />
                   Business
                 </h1>
                 <p className="text-white text-lg">

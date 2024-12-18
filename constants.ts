@@ -53,6 +53,8 @@ export const categories = [
   },
 ];
 
+export const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+
 export const gradientClasses = {
   Fashion: "from-pink-400 to-pink-600",
   Fitness: "from-green-400 to-green-600",
