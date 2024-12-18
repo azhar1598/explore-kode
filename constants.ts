@@ -53,6 +53,16 @@ export const categories = [
   },
 ];
 
+export const gradientClasses = {
+  Fashion: "from-pink-400 to-pink-600",
+  Fitness: "from-green-400 to-green-600",
+  Food: "from-orange-400 to-orange-600",
+  Health: "from-red-400 to-red-600",
+  Retail: "from-blue-400 to-blue-600",
+  Jewellery: "from-purple-400 to-purple-600",
+  Electronics: "from-indigo-400 to-indigo-600",
+};
+
 export const dummyGeminiData = {
   initialInvestment: {
     startupCost: "₹50,000 - ₹2,00,000",

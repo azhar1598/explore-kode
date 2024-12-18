@@ -13,8 +13,57 @@ import {
   Store,
 } from "lucide-react";
 import Link from "next/link";
-import { categories } from "@/constants";
 import { useRouter } from "next/navigation";
+
+// Predefined gradient classes mapping
+const gradientClasses = {
+  Fashion: "from-pink-400 to-pink-600",
+  Fitness: "from-green-400 to-green-600",
+  Food: "from-orange-400 to-orange-600",
+  Health: "from-red-400 to-red-600",
+  Retail: "from-blue-400 to-blue-600",
+  Jewellery: "from-purple-400 to-purple-600",
+  Electronics: "from-indigo-400 to-indigo-600",
+};
+
+// Categories with predefined gradients
+const categories = [
+  {
+    name: "Fashion",
+    icon: Shirt,
+    description: "Clothing, Accessories & Style",
+  },
+  {
+    name: "Fitness",
+    icon: Dumbbell,
+    description: "Gyms, Wellness & Training",
+  },
+  {
+    name: "Food",
+    icon: Utensils,
+    description: "Restaurants, Catering & Cuisine",
+  },
+  {
+    name: "Health",
+    icon: Heart,
+    description: "Medical, Wellness & Care",
+  },
+  {
+    name: "Retail",
+    icon: ShoppingBag,
+    description: "Stores, Shops & Merchandise",
+  },
+  {
+    name: "Jewellery",
+    icon: Gem,
+    description: "Luxury, Accessories & Gems",
+  },
+  {
+    name: "Electronics",
+    icon: Laptop,
+    description: "Tech, Gadgets & Innovation",
+  },
+];
 
 const CategorySelector = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -24,7 +73,7 @@ const CategorySelector = () => {
 
   const handleCategorySelect = (category) => {
     setSelectedCategory(category);
-    router.push(`?category=${selectedCategory}`);
+    router.push(`?category=${category.name.toLowerCase()}`);
     setStep("business");
   };
 
@@ -46,7 +95,7 @@ const CategorySelector = () => {
           >
             <div
               className={`
-              bg-gradient-to-br ${category.gradient} 
+              bg-gradient-to-br ${gradientClasses[category.name]} 
               rounded-2xl p-4 text-white 
               shadow-lg hover:shadow-xl
               flex flex-col items-center
@@ -73,7 +122,7 @@ const CategorySelector = () => {
             <div
               className={`
               p-3 rounded-full 
-              bg-gradient-to-br ${selectedCategory.gradient}
+              bg-gradient-to-br ${gradientClasses[selectedCategory.name]}
             `}
             >
               <selectedCategory.icon
@@ -177,7 +226,7 @@ const CategorySelector = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 p-4">
       <div
         className={`w-full ${
-          step !== "castegory" && "max-w-6xl"
+          step !== "category" && "max-w-6xl"
         } bg-white shadow-2xl rounded-2xl p-6 sm:p-8`}
       >
         <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
