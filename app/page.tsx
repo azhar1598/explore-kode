@@ -14,14 +14,17 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { categories } from "@/constants";
+import { useRouter } from "next/navigation";
 
 const CategorySelector = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [businessName, setBusinessName] = useState("");
   const [step, setStep] = useState("category");
+  const router = useRouter();
 
   const handleCategorySelect = (category) => {
     setSelectedCategory(category);
+    router.push(`?category=${selectedCategory}`);
     setStep("business");
   };
 

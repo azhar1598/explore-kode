@@ -20,8 +20,9 @@ import { categories, dummyGeminiData } from "@/constants";
 import LocationStrategy from "@/components/Business/LocationStrategy";
 
 const MomosBusinessInsights = () => {
-  const [insights, setInsights] = useState(dummyGeminiData);
-  const [loading, setLoading] = useState(false);
+  //   const [insights, setInsights] = useState(dummyGeminiData);
+  const [insights, setInsights] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { name } = useParams();
   const searchParams = useSearchParams();
@@ -30,15 +31,16 @@ const MomosBusinessInsights = () => {
 
   const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
-  console.log("API", API_KEY);
+  console.log("API", API_KEY, insights);
 
   useEffect(() => {
+    if (insights != null) return;
     const fetchBusinessInsights = async () => {
       try {
         const genAI = new GoogleGenerativeAI(API_KEY);
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-        const prompt = `Provide detailed business realistic insights for a ${decodeURIComponent(
+        const prompt = `Provide detailed business realistic insights and pricing should start as cheap as possible for a ${decodeURIComponent(
           name.replace(/\s+/g, " ")
         )} business in India. the prices should start from very minimum prices 
         Create only a structured JSON response with the following details:
@@ -106,7 +108,7 @@ const MomosBusinessInsights = () => {
       }
     };
 
-    // fetchBusinessInsights();
+    fetchBusinessInsights();
   }, []);
 
   // Loader Component (same as previous implementation)
@@ -163,8 +165,8 @@ const MomosBusinessInsights = () => {
 
   // Render insights
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-orange-100 p-4 lg:p-8">
-      <div className="max-w-5xl mx-auto">
+    <div className="min-h-screen  bg-gradient-to-br from-orange-50 to-orange-100 p-4 lg:p-8">
+      <div className="max-w-5xl max-w-[500px] mx-auto">
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-2xl overflow-hidden mb-8">
           <div
@@ -175,7 +177,10 @@ const MomosBusinessInsights = () => {
               <div>
                 <h1 className="text-4xl font-bold">
                   {" "}
-                  {decodeURIComponent(name.replace(/\s+/g, " "))} Business
+                  {decodeURIComponent(name.replace(/\s+/g, " "))
+                    .toLowerCase()
+                    .replace(/^\w/, (c) => c.toUpperCase())}{" "}
+                  Business
                 </h1>
                 <p className="text-white text-lg">
                   {selectedCategory?.description}
