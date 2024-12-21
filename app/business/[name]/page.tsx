@@ -33,6 +33,8 @@ const BusinessInsights = () => {
   const { name } = useParams();
   const searchParams = useSearchParams();
 
+  console.log("ss", "sacas");
+
   const category = searchParams.get("category");
 
   const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
@@ -40,6 +42,7 @@ const BusinessInsights = () => {
   const getBusinessInsights = useQuery({
     queryKey: ["business-insights", name],
     queryFn: async () => {
+      if (getBusinessInsights?.data) return;
       const response = await callApi.get(`/api/business-insights`, {
         params: { name },
       });
