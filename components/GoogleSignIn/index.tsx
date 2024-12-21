@@ -9,7 +9,7 @@ import { createClient } from "@/utils/supabase/client";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 
-export default function GoogleSignIn({ category }: string) {
+export default function GoogleSignIn({ category }: any) {
   const [isGoogleLoading, setIsGoogleLoading] = useState<boolean>(false);
   const supabase = createClient();
 
@@ -47,7 +47,7 @@ export default function GoogleSignIn({ category }: string) {
         w-full py-3 rounded-lg flex items-center justify-center
         transition-all duration-300 mt-4
          bg-blue-600 text-white hover:bg-blue-700
-            cursor-not-allowed
+        
 
       `}
       //   variant="outline"

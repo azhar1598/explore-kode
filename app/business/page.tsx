@@ -1,11 +1,13 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Store, ArrowRight, ChevronLeft } from "lucide-react";
+import { Store, ArrowRight, ChevronLeft, Loader2, Lock } from "lucide-react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { API_KEY, categories, gradientClasses } from "@/constants";
 import GoogleSignIn from "@/components/GoogleSignIn";
 import { createClient } from "@/utils/supabase/client";
+import { useMutation } from "@tanstack/react-query";
+import callApi from "@/services/apiService";
 
 export default function BusinessNamePage() {
   const router = useRouter();
@@ -13,7 +15,7 @@ export default function BusinessNamePage() {
   const supabase = createClient();
 
   const [user, setUser] = useState<any>(null);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState<any>(null);
   const [businessName, setBusinessName] = useState("");
   const [error, setError] = useState("");
 
@@ -26,6 +28,11 @@ export default function BusinessNamePage() {
     };
     fetchUser();
   }, []);
+
+  useEffect(() => {
+    if (!businessName) return;
+    setError("");
+  }, [businessName]);
 
   useEffect(() => {
     const categoryParam = searchParams.get("category");
@@ -51,28 +58,16 @@ export default function BusinessNamePage() {
     setSelectedCategory(foundCategory);
   }, [searchParams, router]);
 
-  const handleNextStep = async () => {
-    setError("");
+  const getBusinessInsights = useMutation({
+    mutationFn: async () =>
+      callApi.post(`/api/business-exist`, {
+        businessName,
+        selectedCategory,
+      }),
 
-    try {
-      if (!businessName.trim()) {
-        setError("Please enter a business name");
-        return;
-      }
-
-      const genAI = new GoogleGenerativeAI(API_KEY);
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-      const prompt = `Determine if a business named "${businessName}" is a valid ${selectedCategory?.name} business. 
-      Respond with ONLY 'true' or 'false'. 
-      Consider the specific characteristics and typical operations of a ${selectedCategory?.name} business.`;
-
-      const result = await model.generateContent(prompt);
-      const response = await result.response.text();
-
-      const validatedResponse = response.trim().toLowerCase();
-
-      if (validatedResponse === "true") {
+    onSuccess: async (res) => {
+      const { data } = res;
+      if (data.isValid) {
         router.push(
           `/business/${encodeURIComponent(
             businessName.trim()
@@ -88,17 +83,19 @@ export default function BusinessNamePage() {
           `Please provide a valid business in the ${selectedCategory?.name} category.`
         );
       }
-    } catch (err) {
-      console.error("Business validation error:", err);
-      setError("Unable to validate business. Please try again.");
-    }
-  };
+
+      console.log("data", data);
+    },
+    onError: (err: Error) => {
+      console.log(err.message);
+    },
+  });
 
   if (!selectedCategory) return null;
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white shadow-2xl rounded-2xl p-6 sm:p-8">
+      <div className="w-full md:w-96 bg-white shadow-2xl rounded-2xl p-6 sm:p-8">
         <button
           onClick={() => router.push("/")}
           className="mb-4 flex items-center text-gray-600 hover:text-gray-800"
@@ -128,25 +125,34 @@ export default function BusinessNamePage() {
           </div>
         </div>
 
-        <div>
+        <div className="relative">
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Business Name
           </label>
-          <input
-            type="text"
-            placeholder="Enter your business name"
-            value={businessName}
-            onChange={(e) => setBusinessName(e.target.value)}
-            className="
-              w-full px-4 py-3 
-              border border-gray-300 
-              rounded-lg 
-              focus:ring-2 focus:ring-blue-500 focus:border-transparent
-              text-gray-800 
-              placeholder-gray-500
-              transition-all duration-300
-            "
-          />
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Enter your business name"
+              value={businessName}
+              onChange={(e) => setBusinessName(e.target.value)}
+              disabled={!user}
+              className={`
+                w-full px-4 py-3 
+                border border-gray-300 
+                rounded-lg 
+                focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                text-gray-800 
+                placeholder-gray-500
+                transition-all duration-300
+                outline-none
+              `}
+            />
+            {!user && (
+              <div className="absolute inset-0 bg-gray-100/80 rounded-lg flex items-center justify-center backdrop-blur-[1px]">
+                <Lock className="text-gray-500 w-5 h-5" />
+              </div>
+            )}
+          </div>
           {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
         </div>
 
@@ -159,8 +165,10 @@ export default function BusinessNamePage() {
           </div>
         ) : (
           <button
-            onClick={handleNextStep}
-            disabled={!businessName.trim()}
+            onClick={() => {
+              getBusinessInsights.mutate();
+            }}
+            disabled={!businessName.trim() || getBusinessInsights.isPending}
             className={`
               w-full py-3 rounded-lg flex items-center justify-center
               transition-all duration-300 mt-4
@@ -171,7 +179,11 @@ export default function BusinessNamePage() {
               }
             `}
           >
-            <Store className="mr-2 w-5 h-5" />
+            {getBusinessInsights.isPending ? (
+              <Loader2 className="mr-2 size-4 animate-spin" />
+            ) : (
+              <Store className="mr-2 w-5 h-5" />
+            )}
             Start My Store <ArrowRight className="ml-2 w-5 h-5" />
           </button>
         )}

@@ -165,7 +165,7 @@ export const categories = [
   },
 ];
 
-export const gradientClasses = {
+export const gradientClasses: any = {
   Fashion: "from-pink-500 to-rose-700", // Unique warm pink shades
   Fitness: "from-green-500 to-emerald-700", // Fresh green tones
   Food: "from-orange-500 to-amber-700", // Vibrant orange
