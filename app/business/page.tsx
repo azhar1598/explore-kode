@@ -35,6 +35,8 @@ export default function BusinessNamePage() {
       return;
     }
 
+    console.log("categoryParam", categoryParam);
+
     const foundCategory = categories.find(
       (cat) =>
         cat.name.toLowerCase().replace(/\s+/g, "").replace(/&/g, "-") ===
@@ -75,7 +77,10 @@ export default function BusinessNamePage() {
           `/business/${encodeURIComponent(
             businessName.trim()
           )}?category=${encodeURIComponent(
-            selectedCategory?.name.toLowerCase()
+            selectedCategory?.name
+              .toLowerCase()
+              .replace(/\s+/g, "")
+              .replace(/&/g, "-")
           )}`
         );
       } else {

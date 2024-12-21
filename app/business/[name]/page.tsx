@@ -16,13 +16,13 @@ import {
 } from "lucide-react";
 import NearbyStores from "@/components/Business/NearByStores";
 import { useParams, useSearchParams } from "next/navigation";
-import { categories, dummyGeminiData } from "@/constants";
+import { categories, dummyGeminiData, gradientClasses } from "@/constants";
 import LocationStrategy from "@/components/Business/LocationStrategy";
 
 const BusinessInsights = () => {
   const [insights, setInsights] = useState(dummyGeminiData);
   // const [insights, setInsights] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const { name } = useParams();
   const searchParams = useSearchParams();
@@ -150,15 +150,18 @@ const BusinessInsights = () => {
   // If error, show error component
   if (error) return <ErrorComponent />;
 
-  console.log("category", category);
+  console.log("category", category, categories);
 
   const selectedCategory = categories.find(
-    (cat) => cat.name.toLowerCase() === category
+    (cat) =>
+      cat.name.toLowerCase().replace(/\s+/g, "").replace(/&/g, "-") === category
   );
 
   //   if (!category) {
   //     return null; // Return nothing if the category doesn't exist
   //   }
+
+  console.log("selectedcategory", selectedCategory);
 
   const Icon = selectedCategory?.icon;
 
@@ -166,12 +169,14 @@ const BusinessInsights = () => {
 
   // Render insights
   return (
-    <div className="min-h-screen  bg-gradient-to-br from-orange-50 to-orange-100 p-4 lg:p-8">
+    <div className="min-h-screen  bg-gradient-to-br from-orange-50 to-orange-100 p-4 lg:p-8 pt-24 lg:pt-24 ">
       <div className="max-w-5xl max-w-[500px] mx-auto">
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-2xl overflow-hidden mb-8">
           <div
-            className={`    bg-gradient-to-br ${selectedCategory?.gradient}  text-white p-8`}
+            className={`    bg-gradient-to-br  ${
+              gradientClasses[selectedCategory.name]
+            } text-white p-8`}
           >
             <div className="flex items-center space-x-4">
               <Icon className="w-16 h-16 text-white" strokeWidth={1.5} />
