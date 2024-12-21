@@ -16,12 +16,18 @@ import {
 } from "lucide-react";
 import NearbyStores from "@/components/Business/NearByStores";
 import { useParams, useSearchParams } from "next/navigation";
-import { categories, dummyGeminiData, gradientClasses } from "@/constants";
+import {
+  categories,
+  dummyGeminiData,
+  gradientClasses,
+  YOUTUBE_API_KEY,
+} from "@/constants";
 import LocationStrategy from "@/components/Business/LocationStrategy";
+import { useQuery } from "@tanstack/react-query";
+import callApi from "@/services/apiService";
+import Image from "next/image";
 
 const BusinessInsights = () => {
-  const [insights, setInsights] = useState(dummyGeminiData);
-  // const [insights, setInsights] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const { name } = useParams();
@@ -31,88 +37,20 @@ const BusinessInsights = () => {
 
   const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
-  console.log("API", API_KEY, insights);
+  const getBusinessInsights = useQuery({
+    queryKey: ["business-insights", name],
+    queryFn: async () => {
+      const response = await callApi.get(`/api/business-insights`, {
+        params: { name },
+      });
+      return response.data;
+    },
+    enabled: !!name,
+  });
 
-  useEffect(() => {
-    if (insights != null) return;
-    const fetchBusinessInsights = async () => {
-      try {
-        const genAI = new GoogleGenerativeAI(API_KEY);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  console.log("API", API_KEY, getBusinessInsights.data);
 
-        const prompt = `Provide detailed business realistic insights and pricing should start as cheap as possible for a ${decodeURIComponent(
-          name.replace(/\s+/g, " ")
-        )} business in India. the prices should start from very minimum prices 
-        Create only a structured JSON response with the following details:
-        {
-          businessName:"short hand Business name"
-          "initialInvestment": {
-            "startupCost": "Range in ₹",
-            "monthlyOperationalCost": "Range in ₹"
-          },
-          "requiredEquipment": [
-            {
-              "item": "Equipment name",
-              "estimatedCost": "Cost range in ₹",
-              "searchKeyword": "Amazon search keyword for the item"
-            }
-          ],
-          "locationStrategy": {
-            "bestLocations": ["Location 1", "Location 2"],
-            "footTraffic": "Description",
-            "competition": "Description"
-          },
-          "licenses": [
-            "License 1",
-            "License 2"
-          ],
-          "revenuePotential": {
-            "dailySales": "Range in ₹",
-            "monthlySales": "Range in ₹"
-          },
-          "digitalServices": [
-            {
-              "service": "Service name",
-              "estimatedCost": "Cost in ₹"
-            }
-          ]
-        }
-        
-        Ensure the response is a valid JSON object that can be directly parsed.`;
-
-        const result = await model.generateContent(prompt);
-        const response = result.response.text();
-
-        console.log("response", response);
-
-        // Remove any markdown code block formatting
-        const jsonResponse = response.replace(/```json\n|```/g, "").trim();
-
-        // Remove any markdown code block formatting
-
-        try {
-          const parsedInsights = JSON.parse(jsonResponse);
-          console.log("jsonparse", jsonResponse);
-          setInsights(parsedInsights);
-          setLoading(false);
-        } catch (parseError) {
-          console.error("Error parsing JSON response:", parseError);
-          setError(
-            `Error parsing the generated insights: ${parseError.message}`
-          );
-          setLoading(false);
-        }
-      } catch (err) {
-        console.error("Error fetching business insights:", err);
-        setError(`Error fetching business insights: ${err.message}`);
-        setLoading(false);
-      }
-    };
-
-    fetchBusinessInsights();
-  }, []);
-
-  // Loader Component (same as previous implementation)
+  // Loader Component
   const Loader = () => (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-blue-100 to-blue-300">
       <div className="relative w-48 h-48">
@@ -144,62 +82,60 @@ const BusinessInsights = () => {
     </div>
   );
 
-  // If loading, show loader
-  if (loading) return <Loader />;
-
-  // If error, show error component
+  if (getBusinessInsights.isFetching) return <Loader />;
   if (error) return <ErrorComponent />;
-
-  console.log("category", category, categories);
 
   const selectedCategory = categories.find(
     (cat) =>
       cat.name.toLowerCase().replace(/\s+/g, "").replace(/&/g, "-") === category
   );
 
-  //   if (!category) {
-  //     return null; // Return nothing if the category doesn't exist
-  //   }
-
-  console.log("selectedcategory", selectedCategory);
-
   const Icon = selectedCategory?.icon;
 
-  console.log("insights", insights);
-
-  // Render insights
   return (
-    <div className="min-h-screen  bg-gradient-to-br from-orange-50 to-orange-100 p-4 lg:p-8 pt-24 lg:pt-24 ">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-orange-100 p-4 lg:p-8 pt-24 lg:pt-24">
       <div className="max-w-5xl max-w-[500px] mx-auto">
-        {/* Header */}
+        {/* Header with Thumbnail */}
         <div className="bg-white rounded-2xl shadow-2xl overflow-hidden mb-8">
           <div
-            className={`    bg-gradient-to-br  ${
+            className={`bg-gradient-to-br ${
               gradientClasses[selectedCategory.name]
             } text-white p-8`}
           >
-            <div className="flex items-center space-x-4">
-              <Icon className="w-16 h-16 text-white" strokeWidth={1.5} />
-              <div>
-                <h1 className="text-4xl font-bold">
-                  {" "}
-                  {insights?.businessName}
-                  <br />
-                  Business
-                </h1>
-                <p className="text-white text-lg">
-                  {selectedCategory?.description}
-                </p>
+            <div className="flex flex-col md:flex-row md:items-center gap-6">
+              {/* Business Info */}
+              <div className="flex items-center space-x-4 flex-1">
+                <Icon className="w-16 h-16 text-white" strokeWidth={1.5} />
+                <div>
+                  <h1 className="text-4xl font-bold">
+                    {getBusinessInsights?.data?.businessName}
+                    <br />
+                    Business
+                  </h1>
+                  <p className="text-white text-lg">
+                    {selectedCategory?.description}
+                  </p>
+                </div>
               </div>
+
+              {/* Business Thumbnail */}
+              {getBusinessInsights?.data?.businessThumbnail && (
+                <div className="relative w-full md:w-64 h-48 rounded-lg overflow-hidden">
+                  <img
+                    src={getBusinessInsights.data.businessThumbnail}
+                    alt={`${getBusinessInsights.data.businessName} thumbnail`}
+                    className="object-cover w-full h-full rounded-lg"
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Insights Grid */}
+        {/* Rest of the component remains the same */}
         <div className="grid md:grid-cols-1 gap-8">
-          {/* Left Column */}
+          {/* Initial Investment */}
           <div className="space-y-8">
-            {/* Initial Investment */}
             <div className="bg-white rounded-2xl shadow-lg p-6 transform transition-all hover:scale-105">
               <div className="flex items-center mb-4">
                 <DollarSign
@@ -214,7 +150,7 @@ const BusinessInsights = () => {
                 <div className="flex justify-between">
                   <span className="text-gray-600">Startup Cost</span>
                   <span className="font-bold text-green-600">
-                    {insights?.initialInvestment.startupCost}
+                    {getBusinessInsights?.data?.initialInvestment.startupCost}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -222,7 +158,10 @@ const BusinessInsights = () => {
                     Monthly Operational Cost
                   </span>
                   <span className="font-bold text-green-600">
-                    {insights?.initialInvestment.monthlyOperationalCost}
+                    {
+                      getBusinessInsights?.data?.initialInvestment
+                        .monthlyOperationalCost
+                    }
                   </span>
                 </div>
               </div>
@@ -240,40 +179,40 @@ const BusinessInsights = () => {
                 </h2>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                {insights?.requiredEquipment.map((equipment, index) => (
-                  <div
-                    key={index}
-                    className="bg-gray-50 rounded-lg p-4 flex justify-between items-center"
-                  >
-                    <div>
-                      <h3 className="text-lg font-medium text-gray-800">
-                        {equipment.item}
-                      </h3>
-                      <p className="text-blue-600 font-semibold">
-                        {equipment.estimatedCost}
-                      </p>
-                    </div>
-                    <a
-                      href={`https://www.amazon.in/s?k=${encodeURIComponent(
-                        equipment.searchKeyword
-                      )}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-500 hover:text-blue-700 transition-colors"
+                {getBusinessInsights?.data?.requiredEquipment.map(
+                  (equipment, index) => (
+                    <div
+                      key={index}
+                      className="bg-gray-50 rounded-lg p-4 flex justify-between items-center"
                     >
-                      <ExternalLink className="w-6 h-6" />
-                    </a>
-                  </div>
-                ))}
+                      <div>
+                        <h3 className="text-lg font-medium text-gray-800">
+                          {equipment.item}
+                        </h3>
+                        <p className="text-blue-600 font-semibold">
+                          {equipment.estimatedCost}
+                        </p>
+                      </div>
+                      <a
+                        href={`https://www.amazon.in/s?k=${encodeURIComponent(
+                          equipment.searchKeyword
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-500 hover:text-blue-700 transition-colors"
+                      >
+                        <ExternalLink className="w-6 h-6" />
+                      </a>
+                    </div>
+                  )
+                )}
               </div>
             </div>
           </div>
 
           {/* Right Column */}
           <div className="space-y-8">
-            {/* Location & Market */}
-            <LocationStrategy insights={insights} />
-            {/* Licensing & Regulations */}
+            <LocationStrategy insights={getBusinessInsights?.data} />
             <div className="bg-white rounded-2xl shadow-lg p-6 transform transition-all hover:scale-105">
               <div className="flex items-center mb-4">
                 <FileText
@@ -285,7 +224,7 @@ const BusinessInsights = () => {
                 </h2>
               </div>
               <div className="space-y-3">
-                {insights?.licenses.map((license, index) => (
+                {getBusinessInsights?.data?.licenses.map((license, index) => (
                   <div
                     key={index}
                     className="flex items-center border-b pb-2 last:border-b-0"
@@ -303,7 +242,7 @@ const BusinessInsights = () => {
 
         {/* Bottom Section */}
         <div className="mt-8 grid md:grid-cols-1 gap-8">
-          {/* Potential Revenue */}
+          {/* Revenue Potential */}
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <div className="flex items-center mb-4">
               <Flame
@@ -318,19 +257,19 @@ const BusinessInsights = () => {
               <div className="flex justify-between">
                 <span className="text-gray-600">Daily Sales</span>
                 <span className="font-bold text-orange-600">
-                  {insights?.revenuePotential.dailySales}
+                  {getBusinessInsights?.data?.revenuePotential.dailySales}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Monthly Revenue</span>
                 <span className="font-bold text-orange-600">
-                  {insights?.revenuePotential.monthlySales}
+                  {getBusinessInsights?.data?.revenuePotential.monthlySales}
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Digital Presence */}
+          {/* Digital Services */}
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <div className="flex items-center mb-4">
               <Globe
@@ -342,24 +281,38 @@ const BusinessInsights = () => {
               </h2>
             </div>
             <div className="space-y-3">
-              {insights?.digitalServices.map((service, index) => (
-                <div
-                  key={index}
-                  className="flex justify-between items-center border-b pb-2 last:border-b-0"
-                >
-                  <div className="flex items-center">
-                    <ShoppingBag className="w-5 h-5 mr-3 text-indigo-400" />
-                    <span className="text-gray-700">{service.service}</span>
+              {getBusinessInsights?.data?.digitalServices.map(
+                (service, index) => (
+                  <div
+                    key={index}
+                    className="flex justify-between items-center border-b pb-2 last:border-b-0"
+                  >
+                    <div className="flex items-center">
+                      <ShoppingBag className="w-5 h-5 mr-3 text-indigo-400" />
+                      <span className="text-gray-700">{service.service}</span>
+                    </div>
+                    <span className="font-semibold text-indigo-600">
+                      {service.estimatedCost}
+                    </span>
                   </div>
-                  <span className="font-semibold text-indigo-600">
-                    {service.estimatedCost}
-                  </span>
-                </div>
-              ))}
+                )
+              )}
             </div>
           </div>
 
-          {/* <NearbyStores /> */}
+          {/* YouTube Video */}
+          {getBusinessInsights?.data?.youtubeVideo && (
+            <div className="w-full">
+              <iframe
+                width="full"
+                height="315"
+                src={`${getBusinessInsights?.data?.youtubeVideo}`}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -58,7 +58,7 @@ export default function BusinessNamePage() {
     setSelectedCategory(foundCategory);
   }, [searchParams, router]);
 
-  const getBusinessInsights = useMutation({
+  const getBusinessExists = useMutation({
     mutationFn: async () =>
       callApi.post(`/api/business-exist`, {
         businessName,
@@ -147,7 +147,7 @@ export default function BusinessNamePage() {
                 outline-none
               `}
             />
-            {!user && (
+            {!user && !selectedCategory && (
               <div className="absolute inset-0 bg-gray-100/80 rounded-lg flex items-center justify-center backdrop-blur-[1px]">
                 <Lock className="text-gray-500 w-5 h-5" />
               </div>
@@ -166,9 +166,9 @@ export default function BusinessNamePage() {
         ) : (
           <button
             onClick={() => {
-              getBusinessInsights.mutate();
+              getBusinessExists.mutate();
             }}
-            disabled={!businessName.trim() || getBusinessInsights.isPending}
+            disabled={!businessName.trim() || getBusinessExists.isPending}
             className={`
               w-full py-3 rounded-lg flex items-center justify-center
               transition-all duration-300 mt-4
@@ -179,7 +179,7 @@ export default function BusinessNamePage() {
               }
             `}
           >
-            {getBusinessInsights.isPending ? (
+            {getBusinessExists.isPending ? (
               <Loader2 className="mr-2 size-4 animate-spin" />
             ) : (
               <Store className="mr-2 w-5 h-5" />
