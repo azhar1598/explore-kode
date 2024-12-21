@@ -9,7 +9,7 @@ import { createClient } from "@/utils/supabase/client";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 
-export default function GoogleSignIn() {
+export default function GoogleSignIn({ category }: string) {
   const [isGoogleLoading, setIsGoogleLoading] = useState<boolean>(false);
   const supabase = createClient();
 
@@ -23,7 +23,7 @@ export default function GoogleSignIn() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `/`,
+          redirectTo: `${window.location.origin}/business?category=${category}`,
         },
       });
 

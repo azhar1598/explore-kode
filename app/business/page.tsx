@@ -155,7 +155,7 @@ export default function BusinessNamePage() {
             <p className="text-sm text-gray-600 mb-2">
               Please sign in to continue
             </p>
-            <GoogleSignIn />
+            <GoogleSignIn category={selectedCategory.name} />
           </div>
         ) : (
           <button
