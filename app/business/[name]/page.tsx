@@ -20,8 +20,8 @@ import { categories, dummyGeminiData } from "@/constants";
 import LocationStrategy from "@/components/Business/LocationStrategy";
 
 const MomosBusinessInsights = () => {
-  // const [insights, setInsights] = useState(dummyGeminiData);
-  const [insights, setInsights] = useState(null);
+  const [insights, setInsights] = useState(dummyGeminiData);
+  // const [insights, setInsights] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { name } = useParams();
