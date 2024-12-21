@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Store, ArrowRight, ChevronLeft } from "lucide-react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { API_KEY } from "@/constants";
+import GoogleSignIn from "@/components/GoogleSignIn";
 
 // Predefined gradient classes (reuse from category page)
 const gradientClasses = {
@@ -209,6 +210,7 @@ export default function BusinessNamePage() {
           <Store className="mr-2 w-5 h-5" />
           Start My Store <ArrowRight className="ml-2 w-5 h-5" />
         </button>
+        <GoogleSignIn />
       </div>
     </div>
   );

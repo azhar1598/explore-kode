@@ -191,7 +191,7 @@ const MomosBusinessInsights = () => {
         </div>
 
         {/* Insights Grid */}
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-1 gap-8">
           {/* Left Column */}
           <div className="space-y-8">
             {/* Initial Investment */}
@@ -297,7 +297,7 @@ const MomosBusinessInsights = () => {
         </div>
 
         {/* Bottom Section */}
-        <div className="mt-8 grid md:grid-cols-2 gap-8">
+        <div className="mt-8 grid md:grid-cols-1 gap-8">
           {/* Potential Revenue */}
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <div className="flex items-center mb-4">
