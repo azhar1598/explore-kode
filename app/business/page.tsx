@@ -5,39 +5,43 @@ import { Store, ArrowRight, ChevronLeft } from "lucide-react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { API_KEY, categories, gradientClasses } from "@/constants";
 import GoogleSignIn from "@/components/GoogleSignIn";
-
-// Predefined gradient classes (reuse from category page)
-
-// Categories array to match the icons
+import { createClient } from "@/utils/supabase/client";
 
 export default function BusinessNamePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const supabase = createClient();
 
+  const [user, setUser] = useState<any>(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [businessName, setBusinessName] = useState("");
   const [error, setError] = useState("");
 
-  // On component mount, check for category in URL
+  useEffect(() => {
+    const fetchUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    fetchUser();
+  }, []);
+
   useEffect(() => {
     const categoryParam = searchParams.get("category");
 
     if (!categoryParam) {
-      // If no category, redirect to category selection
       router.push("/");
       return;
     }
 
-    // Find and set the selected category
     const foundCategory = categories.find(
       (cat) =>
         cat.name.toLowerCase().replace(/\s+/g, "").replace(/&/g, "-") ===
         categoryParam.toLowerCase()
     );
-    console.log("nnn", categories, categoryParam);
 
     if (!foundCategory) {
-      // Invalid category, redirect to category selection
       router.push("/");
       return;
     }
@@ -46,35 +50,27 @@ export default function BusinessNamePage() {
   }, [searchParams, router]);
 
   const handleNextStep = async () => {
-    // Clear previous errors
     setError("");
 
     try {
-      // Validate input
       if (!businessName.trim()) {
         setError("Please enter a business name");
         return;
       }
 
-      // Initialize Gemini AI
       const genAI = new GoogleGenerativeAI(API_KEY);
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-      // Create a clear, specific prompt for validation
       const prompt = `Determine if a business named "${businessName}" is a valid ${selectedCategory?.name} business. 
       Respond with ONLY 'true' or 'false'. 
       Consider the specific characteristics and typical operations of a ${selectedCategory?.name} business.`;
 
-      // Generate content
       const result = await model.generateContent(prompt);
       const response = await result.response.text();
 
-      // Trim and standardize the response
       const validatedResponse = response.trim().toLowerCase();
 
-      // Check the response
       if (validatedResponse === "true") {
-        // Navigate to business details page
         router.push(
           `/business/${encodeURIComponent(
             businessName.trim()
@@ -83,7 +79,6 @@ export default function BusinessNamePage() {
           )}`
         );
       } else {
-        // Handle invalid business
         setError(
           `Please provide a valid business in the ${selectedCategory?.name} category.`
         );
@@ -94,11 +89,10 @@ export default function BusinessNamePage() {
     }
   };
 
-  // If no category selected, don't render
   if (!selectedCategory) return null;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 p-4">
+    <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-white shadow-2xl rounded-2xl p-6 sm:p-8">
         <button
           onClick={() => router.push("/")}
@@ -151,23 +145,31 @@ export default function BusinessNamePage() {
           {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
         </div>
 
-        <button
-          onClick={handleNextStep}
-          disabled={!businessName.trim()}
-          className={`
-            w-full py-3 rounded-lg flex items-center justify-center
-            transition-all duration-300 mt-4
-            ${
-              businessName.trim()
-                ? "bg-blue-600 text-white hover:bg-blue-700"
-                : "bg-gray-300 text-gray-500 cursor-not-allowed"
-            }
-          `}
-        >
-          <Store className="mr-2 w-5 h-5" />
-          Start My Store <ArrowRight className="ml-2 w-5 h-5" />
-        </button>
-        <GoogleSignIn />
+        {!user ? (
+          <div className="mt-4">
+            <p className="text-sm text-gray-600 mb-2">
+              Please sign in to continue
+            </p>
+            <GoogleSignIn />
+          </div>
+        ) : (
+          <button
+            onClick={handleNextStep}
+            disabled={!businessName.trim()}
+            className={`
+              w-full py-3 rounded-lg flex items-center justify-center
+              transition-all duration-300 mt-4
+              ${
+                businessName.trim()
+                  ? "bg-blue-600 text-white hover:bg-blue-700"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              }
+            `}
+          >
+            <Store className="mr-2 w-5 h-5" />
+            Start My Store <ArrowRight className="ml-2 w-5 h-5" />
+          </button>
+        )}
       </div>
     </div>
   );

@@ -19,7 +19,7 @@ import { useParams, useSearchParams } from "next/navigation";
 import { categories, dummyGeminiData } from "@/constants";
 import LocationStrategy from "@/components/Business/LocationStrategy";
 
-const MomosBusinessInsights = () => {
+const BusinessInsights = () => {
   const [insights, setInsights] = useState(dummyGeminiData);
   // const [insights, setInsights] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -361,4 +361,4 @@ const MomosBusinessInsights = () => {
   );
 };
 
-export default MomosBusinessInsights;
+export default BusinessInsights;
