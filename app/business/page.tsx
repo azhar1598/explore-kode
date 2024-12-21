@@ -3,58 +3,12 @@ import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Store, ArrowRight, ChevronLeft } from "lucide-react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { API_KEY } from "@/constants";
+import { API_KEY, categories, gradientClasses } from "@/constants";
 import GoogleSignIn from "@/components/GoogleSignIn";
 
 // Predefined gradient classes (reuse from category page)
-const gradientClasses = {
-  Fashion: "from-pink-400 to-pink-600",
-  Fitness: "from-green-400 to-green-600",
-  Food: "from-orange-400 to-orange-600",
-  Health: "from-red-400 to-red-600",
-  Retail: "from-blue-400 to-blue-600",
-  Jewellery: "from-purple-400 to-purple-600",
-  Electronics: "from-indigo-400 to-indigo-600",
-};
 
 // Categories array to match the icons
-const categories = [
-  {
-    name: "Fashion",
-    icon: Store,
-    description: "Clothing, Accessories & Style",
-  },
-  {
-    name: "Fitness",
-    icon: Store,
-    description: "Gyms, Wellness & Training",
-  },
-  {
-    name: "Food",
-    icon: Store,
-    description: "Restaurants, Catering & Cuisine",
-  },
-  {
-    name: "Health",
-    icon: Store,
-    description: "Medical, Wellness & Care",
-  },
-  {
-    name: "Retail",
-    icon: Store,
-    description: "Stores, Shops & Merchandise",
-  },
-  {
-    name: "Jewellery",
-    icon: Store,
-    description: "Luxury, Accessories & Gems",
-  },
-  {
-    name: "Electronics",
-    icon: Store,
-    description: "Tech, Gadgets & Innovation",
-  },
-];
 
 export default function BusinessNamePage() {
   const router = useRouter();
@@ -76,8 +30,11 @@ export default function BusinessNamePage() {
 
     // Find and set the selected category
     const foundCategory = categories.find(
-      (cat) => cat.name.toLowerCase() === categoryParam.toLowerCase()
+      (cat) =>
+        cat.name.toLowerCase().replace(/\s+/g, "").replace(/&/g, "-") ===
+        categoryParam.toLowerCase()
     );
+    console.log("nnn", categories, categoryParam);
 
     if (!foundCategory) {
       // Invalid category, redirect to category selection
