@@ -147,7 +147,7 @@ export default function BusinessNamePage() {
                 outline-none
               `}
             />
-            {!user && !selectedCategory && (
+            {!user && (
               <div className="absolute inset-0 bg-gray-100/80 rounded-lg flex items-center justify-center backdrop-blur-[1px]">
                 <Lock className="text-gray-500 w-5 h-5" />
               </div>
