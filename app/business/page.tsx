@@ -8,6 +8,11 @@ import GoogleSignIn from "@/components/GoogleSignIn";
 import { createClient } from "@/utils/supabase/client";
 import { useMutation } from "@tanstack/react-query";
 import callApi from "@/services/apiService";
+import axios from "axios";
+import { getToken } from "firebase/messaging";
+import { messaging } from "@/lib/firebase";
+
+// import { messaging } from "@/firebase";
 
 export default function BusinessNamePage() {
   const router = useRouter();
@@ -18,6 +23,26 @@ export default function BusinessNamePage() {
   const [selectedCategory, setSelectedCategory] = useState<any>(null);
   const [businessName, setBusinessName] = useState("");
   const [error, setError] = useState("");
+
+  async function requestPermission() {
+    const permission = await Notification.requestPermission();
+    if (permission === "granted") {
+      // Generate Token
+      const token = await getToken(messaging, {
+        vapidKey:
+          "BLKAEHPx3HfXZl8Ra8JEGh1RDwBMDK-5_PlMHps-VApF6GeAK_KAJN0By3ZwThAfs9JlqXQaJFaZyMYIKHIs_Xg",
+      });
+      console.log("Token Gen", token);
+      // Send this token  to server ( db)
+    } else if (permission === "denied") {
+      alert("You denied for the notification");
+    }
+  }
+
+  useEffect(() => {
+    // Req user for notification permission
+    requestPermission();
+  }, []);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -60,7 +85,7 @@ export default function BusinessNamePage() {
 
   const getBusinessExists = useMutation({
     mutationFn: async () =>
-      callApi.post(`/api/business-exist`, {
+      axios.post(`/api/business-exist`, {
         businessName,
         selectedCategory,
       }),

@@ -8,9 +8,10 @@ import { createClient } from "@/utils/supabase/client";
 // import { toast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
+import { useMutation } from "@tanstack/react-query";
+import callApi from "@/services/apiService";
 
 export default function GoogleSignIn({ category }: any) {
-  const [isGoogleLoading, setIsGoogleLoading] = useState<boolean>(false);
   const supabase = createClient();
 
   const searchParams = useSearchParams();
@@ -18,7 +19,7 @@ export default function GoogleSignIn({ category }: any) {
   const next = searchParams.get("next");
 
   async function signInWithGoogle() {
-    setIsGoogleLoading(true);
+    // setIsGoogleLoading(true);
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
@@ -36,9 +37,28 @@ export default function GoogleSignIn({ category }: any) {
       //     description: "There was an error logging in with Google.",
       //     variant: "destructive",
       //   });
-      setIsGoogleLoading(false);
+      // setIsGoogleLoading(false);
     }
   }
+
+  const loginMutation = useMutation({
+    mutationFn: async () =>
+      supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/business?category=${category}`,
+        },
+      }),
+
+    onSuccess: async (res) => {
+      const { data } = res;
+
+      console.log("data", data);
+    },
+    onError: (err: Error) => {
+      console.log(err.message);
+    },
+  });
 
   return (
     <button
@@ -47,14 +67,14 @@ export default function GoogleSignIn({ category }: any) {
         w-full py-3 rounded-lg flex items-center justify-center
         transition-all duration-300 mt-4
          bg-blue-600 text-white hover:bg-blue-700
-        
-
       `}
       //   variant="outline"
-      onClick={signInWithGoogle}
-      disabled={isGoogleLoading}
+      onClick={() => {
+        loginMutation.mutate();
+      }}
+      disabled={loginMutation.isPending}
     >
-      {isGoogleLoading ? (
+      {loginMutation.isPending ? (
         <Loader2 className="mr-2 size-4 animate-spin" />
       ) : (
         <Image

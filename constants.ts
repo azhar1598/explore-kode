@@ -4,6 +4,7 @@ import {
   Book,
   Calendar,
   Car,
+  Construction,
   Dumbbell,
   Film,
   Gem,
@@ -158,6 +159,12 @@ export const categories = [
     description: "Sustainability, Conservation & Outdoors",
   },
   {
+    name: "Construction",
+    icon: Construction,
+    gradient: "from-orange-400 to-orange-600",
+    description: "Care, Manufacturing & Construction",
+  },
+  {
     name: "Others",
     icon: PuzzleIcon,
     gradient: "from-gray-400 to-gray-600",
@@ -189,6 +196,7 @@ export const gradientClasses: any = {
   Finance: "from-emerald-500 to-green-700", // Wealth-inspired gold
   "Pets & Animals": "from-orange-600 to-rose-700", // Fun orange-rose blend
   "Nature & Environment": "from-green-600 to-emerald-800", // Nature green tones
+  Construction: "from-emerald-500 to-green-700",
 };
 
 export const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
@@ -271,3 +279,8 @@ export const dummyGeminiData = {
 };
 
 export const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
+
+export const API_BASE_URL =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:3001"
+    : process.env.API_BASE_URL;

@@ -1,7 +1,9 @@
+import { API_BASE_URL } from "@/constants";
+import { createClient } from "@/utils/supabase/client";
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { getSession } from "next-auth/react";
 
-export const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+export const BASE_URL = API_BASE_URL;
 
 export const api = axios.create({
   baseURL: BASE_URL,
@@ -46,15 +48,19 @@ const callApi = {
     config?: AxiosRequestConfig
   ): Promise<ApiResponse<T>> {
     try {
-      // const token = await getAccessToken();
-      const session: any = await getSession();
+      const supabase = createClient();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      const accessToken = session?.access_token;
 
       const headers = {
-        ...(session?.user.accessToken
-          ? { Authorization: `Bearer ${session?.user.accessToken}` }
-          : {}),
-        isMock: false,
+        ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+        ...config?.headers,
       };
+
+      console.log("Request headers:", headers); // For debugging
+
       const response: AxiosResponse<T> = await api.request({
         url,
         method,
@@ -62,6 +68,7 @@ const callApi = {
         headers,
         ...config,
       });
+
       return { data: response.data, status: response.status };
     } catch (error: any) {
       if (axios.isAxiosError(error)) {

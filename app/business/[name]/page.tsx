@@ -33,8 +33,6 @@ const BusinessInsights = () => {
   const { name } = useParams();
   const searchParams = useSearchParams();
 
-  console.log("ss", "sacas");
-
   const category = searchParams.get("category");
 
   const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
@@ -42,8 +40,8 @@ const BusinessInsights = () => {
   const getBusinessInsights = useQuery({
     queryKey: ["business-insights", name],
     queryFn: async () => {
-      if (getBusinessInsights?.data) return;
-      const response = await callApi.get(`/api/business-insights`, {
+      // if (getBusinessInsights?.data) return;
+      const response = await callApi.get(`/business-insights`, {
         params: { name },
       });
       return response.data;
@@ -51,7 +49,7 @@ const BusinessInsights = () => {
     enabled: !!name,
   });
 
-  console.log("API", API_KEY, getBusinessInsights.data);
+  console.log("API", API_KEY, getBusinessInsights.data?.data);
 
   // Loader Component
   const Loader = () => (
@@ -111,7 +109,7 @@ const BusinessInsights = () => {
                 <Icon className="w-16 h-16 text-white" strokeWidth={1.5} />
                 <div>
                   <h1 className="text-4xl font-bold">
-                    {getBusinessInsights?.data?.businessName}
+                    {getBusinessInsights?.data?.data?.businessName}
                     <br />
                     Business
                   </h1>
@@ -122,11 +120,11 @@ const BusinessInsights = () => {
               </div>
 
               {/* Business Thumbnail */}
-              {getBusinessInsights?.data?.businessThumbnail && (
+              {getBusinessInsights?.data?.data?.businessThumbnail && (
                 <div className="relative w-full md:w-64 h-48 rounded-lg overflow-hidden">
                   <img
-                    src={getBusinessInsights.data.businessThumbnail}
-                    alt={`${getBusinessInsights.data.businessName} thumbnail`}
+                    src={getBusinessInsights.data?.data?.businessThumbnail}
+                    alt={`${getBusinessInsights.data?.data?.businessName} thumbnail`}
                     className="object-cover w-full h-full rounded-lg"
                   />
                 </div>
@@ -153,7 +151,10 @@ const BusinessInsights = () => {
                 <div className="flex justify-between">
                   <span className="text-gray-600">Startup Cost</span>
                   <span className="font-bold text-green-600">
-                    {getBusinessInsights?.data?.initialInvestment.startupCost}
+                    {
+                      getBusinessInsights?.data?.data?.initialInvestment
+                        .startupCost
+                    }
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -162,7 +163,7 @@ const BusinessInsights = () => {
                   </span>
                   <span className="font-bold text-green-600">
                     {
-                      getBusinessInsights?.data?.initialInvestment
+                      getBusinessInsights?.data?.data?.initialInvestment
                         .monthlyOperationalCost
                     }
                   </span>
@@ -182,7 +183,7 @@ const BusinessInsights = () => {
                 </h2>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                {getBusinessInsights?.data?.requiredEquipment.map(
+                {getBusinessInsights?.data?.data?.requiredEquipment.map(
                   (equipment, index) => (
                     <div
                       key={index}
@@ -215,7 +216,7 @@ const BusinessInsights = () => {
 
           {/* Right Column */}
           <div className="space-y-8">
-            <LocationStrategy insights={getBusinessInsights?.data} />
+            <LocationStrategy insights={getBusinessInsights?.data?.data} />
             <div className="bg-white rounded-2xl shadow-lg p-6 transform transition-all hover:scale-105">
               <div className="flex items-center mb-4">
                 <FileText
@@ -227,17 +228,19 @@ const BusinessInsights = () => {
                 </h2>
               </div>
               <div className="space-y-3">
-                {getBusinessInsights?.data?.licenses.map((license, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center border-b pb-2 last:border-b-0"
-                  >
-                    <div className="w-6 h-6 mr-3 bg-green-100 rounded-full flex items-center justify-center">
-                      <Flame className="w-4 h-4 text-green-600" />
+                {getBusinessInsights?.data?.data?.licenses.map(
+                  (license, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center border-b pb-2 last:border-b-0"
+                    >
+                      <div className="w-6 h-6 mr-3 bg-green-100 rounded-full flex items-center justify-center">
+                        <Flame className="w-4 h-4 text-green-600" />
+                      </div>
+                      <span className="text-gray-700">{license}</span>
                     </div>
-                    <span className="text-gray-700">{license}</span>
-                  </div>
-                ))}
+                  )
+                )}
               </div>
             </div>
           </div>
@@ -260,13 +263,16 @@ const BusinessInsights = () => {
               <div className="flex justify-between">
                 <span className="text-gray-600">Daily Sales</span>
                 <span className="font-bold text-orange-600">
-                  {getBusinessInsights?.data?.revenuePotential.dailySales}
+                  {getBusinessInsights?.data?.data?.revenuePotential.dailySales}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Monthly Revenue</span>
                 <span className="font-bold text-orange-600">
-                  {getBusinessInsights?.data?.revenuePotential.monthlySales}
+                  {
+                    getBusinessInsights?.data?.data?.revenuePotential
+                      .monthlySales
+                  }
                 </span>
               </div>
             </div>
@@ -284,7 +290,7 @@ const BusinessInsights = () => {
               </h2>
             </div>
             <div className="space-y-3">
-              {getBusinessInsights?.data?.digitalServices.map(
+              {getBusinessInsights?.data?.data?.digitalServices.map(
                 (service, index) => (
                   <div
                     key={index}
@@ -304,12 +310,12 @@ const BusinessInsights = () => {
           </div>
 
           {/* YouTube Video */}
-          {getBusinessInsights?.data?.youtubeVideo && (
+          {getBusinessInsights?.data?.data?.youtubeVideo && (
             <div className="w-full">
               <iframe
                 width="full"
                 height="315"
-                src={`${getBusinessInsights?.data?.youtubeVideo}`}
+                src={`${getBusinessInsights?.data?.data?.youtubeVideo}`}
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen

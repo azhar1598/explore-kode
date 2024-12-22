@@ -39,6 +39,7 @@ export const gradientClasses = {
   Finance: "from-emerald-500 to-green-700", // Wealth-inspired gold
   "Pets & Animals": "from-orange-600 to-rose-700", // Fun orange-rose blend
   "Nature & Environment": "from-green-600 to-emerald-800", // Nature green tones
+  Construction: "from-emerald-500 to-green-700",
 };
 
 export default function CategoryPage() {
