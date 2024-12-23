@@ -41,8 +41,9 @@ export default function BusinessNamePage() {
 
   useEffect(() => {
     // Req user for notification permission
+    if (!user) return;
     requestPermission();
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     const fetchUser = async () => {
