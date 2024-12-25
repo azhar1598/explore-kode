@@ -172,13 +172,34 @@
 // export default Header;
 
 import React, { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { LogOut, Menu, RocketIcon, User, X } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navItems = ["Home", "Features", "About", "Contact"];
+
+  const [user, setUser] = React.useState(null);
+  const router = useRouter();
+  const supabase = createClient();
+
+  React.useEffect(() => {
+    const fetchUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    fetchUser();
+  }, []);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    router.push("/");
+  };
 
   return (
     <header className="bg-black/90 backdrop-blur-md fixed top-0 w-full z-50">
@@ -234,6 +255,24 @@ const Header = () => {
                   {item}
                 </a>
               ))}
+              {user ? (
+                <div className="flex items-center space-x-4">
+                  <button
+                    onClick={handleSignOut}
+                    className="flex items-center space-x-2 text-gray-300 "
+                  >
+                    <LogOut size={20} />
+                    <span>Sign Out</span>
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => router.push("/login")}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Sign In
+                </button>
+              )}
               <button className="bg-gradient-to-r from-blue-500 to-purple-500 px-6 py-2 rounded-lg hover:opacity-90 transition">
                 Get Started
               </button>

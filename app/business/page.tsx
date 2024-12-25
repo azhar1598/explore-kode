@@ -120,20 +120,23 @@ export default function BusinessNamePage() {
   if (!selectedCategory) return null;
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="w-full md:w-96 bg-white shadow-2xl rounded-2xl p-6 sm:p-8">
+    <div className="min-h-screen bg-black text-white overflow-hidden flex items-center justify-center p-4 w-[100vw]">
+      {/* Animated Gradient Background */}
+      <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 opacity-20 animsate-pulse" />
+
+      <div className="relative w-full md:w-96 bg-gray-900/50 backdrop-blur-lg border border-gray-800 shadow-2xl rounded-2xl p-6 sm:p-8">
         <button
-          onClick={() => router.push("/")}
-          className="mb-4 flex items-center text-gray-600 hover:text-gray-800"
+          onClick={() => router.push("/category")}
+          className="mb-4 flex items-center text-gray-400 hover:text-white transition-colors"
         >
           <ChevronLeft className="mr-2" /> Back to Categories
         </button>
 
-        <div className="flex items-center space-x-4 bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-xl mb-6">
+        <div className="flex items-center space-x-4 bg-gray-800/50 backdrop-blur-sm p-4 rounded-xl mb-6">
           <div
             className={`
               p-3 rounded-full 
-              bg-gradient-to-br ${gradientClasses[selectedCategory.name]}
+              bg-gradient-to-br from-blue-500 to-purple-500
             `}
           >
             <selectedCategory.icon
@@ -142,17 +145,17 @@ export default function BusinessNamePage() {
             />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-800">
+            <h2 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
               {selectedCategory.name}
             </h2>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-400">
               {selectedCategory.description}
             </p>
           </div>
         </div>
 
         <div className="relative">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-300 mb-2">
             Business Name
           </label>
           <div className="relative">
@@ -162,29 +165,28 @@ export default function BusinessNamePage() {
               value={businessName}
               onChange={(e) => setBusinessName(e.target.value)}
               disabled={!user}
-              className={`
-                w-full px-4 py-3 
-                border border-gray-300 
+              className="w-full px-4 py-3 
+                bg-gray-800 
+                border border-gray-700 
                 rounded-lg 
-                focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                text-gray-800 
+                focus:ring-2 focus:ring-purple-500 focus:border-transparent
+                text-white 
                 placeholder-gray-500
                 transition-all duration-300
-                outline-none
-              `}
+                outline-none"
             />
             {!user && (
-              <div className="absolute inset-0 bg-gray-100/80 rounded-lg flex items-center justify-center backdrop-blur-[1px]">
-                <Lock className="text-gray-500 w-5 h-5" />
+              <div className="absolute inset-0 bg-gray-900/80 rounded-lg flex items-center justify-center backdrop-blur-[1px]">
+                <Lock className="text-gray-400 w-5 h-5" />
               </div>
             )}
           </div>
-          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+          {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
         </div>
 
         {!user ? (
           <div className="mt-4">
-            <p className="text-sm text-gray-600 mb-2">
+            <p className="text-sm text-gray-400 mb-2">
               Please sign in to continue
             </p>
             <GoogleSignIn category={selectedCategory.name} />
@@ -200,8 +202,8 @@ export default function BusinessNamePage() {
               transition-all duration-300 mt-4
               ${
                 businessName.trim()
-                  ? "bg-blue-600 text-white hover:bg-blue-700"
-                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  ? "bg-gradient-to-r from-blue-500 to-purple-500 hover:opacity-90 text-white"
+                  : "bg-gray-800 text-gray-500 cursor-not-allowed"
               }
             `}
           >
