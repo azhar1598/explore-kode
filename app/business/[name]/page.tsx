@@ -94,32 +94,28 @@ const BusinessInsights = () => {
   const Icon = selectedCategory?.icon;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-orange-100 p-4 lg:p-8 pt-24 lg:pt-24">
-      <div className="max-w-5xl max-w-[500px] mx-auto">
-        {/* Header with Thumbnail */}
-        <div className="bg-white rounded-2xl shadow-2xl overflow-hidden mb-8">
-          <div
-            className={`bg-gradient-to-br ${
-              gradientClasses[selectedCategory.name]
-            } text-white p-8`}
-          >
+    <div className="min-h-screen bg-black text-white overflow-hidden">
+      {/* Animated Gradient Background */}
+      <div className="fixed inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 opacity-20 animates-pulse" />
+
+      <div className="relative max-w-5xl mx-auto p-4 pt-24 lg:pt-24">
+        {/* Header Card */}
+        <div className="bg-gray-900/50 backdrop-blur-lg rounded-2xl shadow-2xl overflow-hidden mb-8 border border-gray-800">
+          <div className={`bg-gradient-to-r from-blue-500 to-purple-500 p-8`}>
             <div className="flex flex-col md:flex-row md:items-center gap-6">
-              {/* Business Info */}
               <div className="flex items-center space-x-4 flex-1">
                 <Icon className="w-16 h-16 text-white" strokeWidth={1.5} />
                 <div>
-                  <h1 className="text-4xl font-bold">
+                  <h1 className="text-4xl font-bold text-white">
                     {getBusinessInsights?.data?.data?.businessName}
                     <br />
                     Business
                   </h1>
-                  <p className="text-white text-lg">
+                  <p className="text-gray-200 text-lg">
                     {selectedCategory?.description}
                   </p>
                 </div>
               </div>
-
-              {/* Business Thumbnail */}
               {getBusinessInsights?.data?.data?.businessThumbnail && (
                 <div className="relative w-full md:w-64 h-48 rounded-lg overflow-hidden">
                   <img
@@ -133,142 +129,132 @@ const BusinessInsights = () => {
           </div>
         </div>
 
-        {/* Rest of the component remains the same */}
+        {/* Content Grid */}
         <div className="grid md:grid-cols-1 gap-8">
-          {/* Initial Investment */}
-          <div className="space-y-8">
-            <div className="bg-white rounded-2xl shadow-lg p-6 transform transition-all hover:scale-105">
-              <div className="flex items-center mb-4">
-                <DollarSign
-                  className="w-8 h-8 text-green-500 mr-3"
-                  strokeWidth={1.5}
-                />
-                <h2 className="text-2xl font-bold text-gray-800">
-                  Initial Investment
-                </h2>
-              </div>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Startup Cost</span>
-                  <span className="font-bold text-green-600">
-                    {
-                      getBusinessInsights?.data?.data?.initialInvestment
-                        .startupCost
-                    }
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">
-                    Monthly Operational Cost
-                  </span>
-                  <span className="font-bold text-green-600">
-                    {
-                      getBusinessInsights?.data?.data?.initialInvestment
-                        .monthlyOperationalCost
-                    }
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Equipment & Materials */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 transform transition-all hover:scale-105">
-              <div className="flex items-center mb-6">
-                <Container
-                  className="w-8 h-8 text-blue-500 mr-3"
-                  strokeWidth={1.5}
-                />
-                <h2 className="text-2xl font-bold text-gray-800">
-                  Required Equipment
-                </h2>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                {getBusinessInsights?.data?.data?.requiredEquipment.map(
-                  (equipment, index) => (
-                    <div
-                      key={index}
-                      className="bg-gray-50 rounded-lg p-4 flex justify-between items-center"
-                    >
-                      <div>
-                        <h3 className="text-lg font-medium text-gray-800">
-                          {equipment.item}
-                        </h3>
-                        <p className="text-blue-600 font-semibold">
-                          {equipment.estimatedCost}
-                        </p>
-                      </div>
-                      <a
-                        href={`https://www.amazon.in/s?k=${encodeURIComponent(
-                          equipment.searchKeyword
-                        )}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-500 hover:text-blue-700 transition-colors"
-                      >
-                        <ExternalLink className="w-6 h-6" />
-                      </a>
-                    </div>
-                  )
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column */}
-          <div className="space-y-8">
-            <LocationStrategy insights={getBusinessInsights?.data?.data} />
-            <div className="bg-white rounded-2xl shadow-lg p-6 transform transition-all hover:scale-105">
-              <div className="flex items-center mb-4">
-                <FileText
-                  className="w-8 h-8 text-red-500 mr-3"
-                  strokeWidth={1.5}
-                />
-                <h2 className="text-2xl font-bold text-gray-800">
-                  Licenses & Permits
-                </h2>
-              </div>
-              <div className="space-y-3">
-                {getBusinessInsights?.data?.data?.licenses.map(
-                  (license, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center border-b pb-2 last:border-b-0"
-                    >
-                      <div className="w-6 h-6 mr-3 bg-green-100 rounded-full flex items-center justify-center">
-                        <Flame className="w-4 h-4 text-green-600" />
-                      </div>
-                      <span className="text-gray-700">{license}</span>
-                    </div>
-                  )
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom Section */}
-        <div className="mt-8 grid md:grid-cols-1 gap-8">
-          {/* Revenue Potential */}
-          <div className="bg-white rounded-2xl shadow-lg p-6">
+          {/* Investment Card */}
+          <div className="bg-gray-900/50 backdrop-blur-lg rounded-2xl p-6 border border-gray-800 transform transition-all hover:scale-105">
             <div className="flex items-center mb-4">
-              <Flame
-                className="w-8 h-8 text-orange-500 mr-3"
+              <DollarSign
+                className="w-8 h-8 text-green-400 mr-3"
                 strokeWidth={1.5}
               />
-              <h2 className="text-2xl font-bold text-gray-800">
+              <h2 className="text-2xl font-bold text-white">
+                Initial Investment
+              </h2>
+            </div>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-gray-300">Startup Cost</span>
+                <span className="font-bold text-green-400">
+                  {
+                    getBusinessInsights?.data?.data?.initialInvestment
+                      .startupCost
+                  }
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-300">Monthly Operational Cost</span>
+                <span className="font-bold text-green-400">
+                  {
+                    getBusinessInsights?.data?.data?.initialInvestment
+                      .monthlyOperationalCost
+                  }
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Equipment Card */}
+          <div className="bg-gray-900/50 backdrop-blur-lg rounded-2xl p-6 border border-gray-800 transform transition-all hover:scale-105">
+            <div className="flex items-center mb-6">
+              <Container
+                className="w-8 h-8 text-blue-400 mr-3"
+                strokeWidth={1.5}
+              />
+              <h2 className="text-2xl font-bold text-white">
+                Required Equipment
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {getBusinessInsights?.data?.data?.requiredEquipment.map(
+                (equipment, index) => (
+                  <div
+                    key={index}
+                    className="bg-gray-800/50 rounded-lg p-4 flex justify-between items-center"
+                  >
+                    <div>
+                      <h3 className="text-lg font-medium text-white">
+                        {equipment.item}
+                      </h3>
+                      <p className="text-blue-400 font-semibold">
+                        {equipment.estimatedCost}
+                      </p>
+                    </div>
+                    <a
+                      href={`https://www.amazon.in/s?k=${encodeURIComponent(
+                        equipment.searchKeyword
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-400 hover:text-blue-300 transition-colors"
+                    >
+                      <ExternalLink className="w-6 h-6" />
+                    </a>
+                  </div>
+                )
+              )}
+            </div>
+          </div>
+
+          {/* Licenses Card */}
+          <div className="bg-gray-900/50 backdrop-blur-lg rounded-2xl p-6 border border-gray-800 transform transition-all hover:scale-105">
+            <div className="flex items-center mb-4">
+              <FileText
+                className="w-8 h-8 text-red-400 mr-3"
+                strokeWidth={1.5}
+              />
+              <h2 className="text-2xl font-bold text-white">
+                Licenses & Permits
+              </h2>
+            </div>
+            <div className="space-y-3">
+              {getBusinessInsights?.data?.data?.licenses.map(
+                (license, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center border-b border-gray-700 pb-2 last:border-b-0"
+                  >
+                    <div className="w-6 h-6 mr-3 bg-green-900/50 rounded-full flex items-center justify-center">
+                      <Flame className="w-4 h-4 text-green-400" />
+                    </div>
+                    <span className="text-gray-300">{license}</span>
+                  </div>
+                )
+              )}
+            </div>
+          </div>
+
+          {/* Revenue Card */}
+          <div className="bg-gray-900/50 backdrop-blur-lg rounded-2xl p-6 border border-gray-800">
+            <div className="flex items-center mb-4">
+              <Flame
+                className="w-8 h-8 text-orange-400 mr-3"
+                strokeWidth={1.5}
+              />
+              <h2 className="text-2xl font-bold text-white">
                 Revenue Potential
               </h2>
             </div>
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span className="text-gray-600">Daily Sales</span>
-                <span className="font-bold text-orange-600">
+                <span className="text-gray-300">Daily Sales</span>
+                <span className="font-bold text-orange-400">
                   {getBusinessInsights?.data?.data?.revenuePotential.dailySales}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Monthly Revenue</span>
-                <span className="font-bold text-orange-600">
+                <span className="text-gray-300">Monthly Revenue</span>
+                <span className="font-bold text-orange-400">
                   {
                     getBusinessInsights?.data?.data?.revenuePotential
                       .monthlySales
@@ -278,14 +264,14 @@ const BusinessInsights = () => {
             </div>
           </div>
 
-          {/* Digital Services */}
-          <div className="bg-white rounded-2xl shadow-lg p-6">
+          {/* Digital Services Card */}
+          <div className="bg-gray-900/50 backdrop-blur-lg rounded-2xl p-6 border border-gray-800">
             <div className="flex items-center mb-4">
               <Globe
-                className="w-8 h-8 text-indigo-500 mr-3"
+                className="w-8 h-8 text-indigo-400 mr-3"
                 strokeWidth={1.5}
               />
-              <h2 className="text-2xl font-bold text-gray-800">
+              <h2 className="text-2xl font-bold text-white">
                 Digital Services
               </h2>
             </div>
@@ -294,13 +280,13 @@ const BusinessInsights = () => {
                 (service, index) => (
                   <div
                     key={index}
-                    className="flex justify-between items-center border-b pb-2 last:border-b-0"
+                    className="flex justify-between items-center border-b border-gray-700 pb-2 last:border-b-0"
                   >
                     <div className="flex items-center">
                       <ShoppingBag className="w-5 h-5 mr-3 text-indigo-400" />
-                      <span className="text-gray-700">{service.service}</span>
+                      <span className="text-gray-300">{service.service}</span>
                     </div>
-                    <span className="font-semibold text-indigo-600">
+                    <span className="font-semibold text-indigo-400">
                       {service.estimatedCost}
                     </span>
                   </div>
@@ -311,14 +297,15 @@ const BusinessInsights = () => {
 
           {/* YouTube Video */}
           {getBusinessInsights?.data?.data?.youtubeVideo && (
-            <div className="w-full">
+            <div className="w-full bg-gray-900/50 backdrop-blur-lg rounded-2xl p-6 border border-gray-800">
               <iframe
-                width="full"
+                width="100%"
                 height="315"
-                src={`${getBusinessInsights?.data?.data?.youtubeVideo}`}
+                src={getBusinessInsights?.data?.data?.youtubeVideo}
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
+                className="rounded-lg"
               ></iframe>
             </div>
           )}

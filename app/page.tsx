@@ -6,7 +6,7 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen bg-black text-white overflow-hidden w-[100vw] mt-[64px]">
       <div className="relative">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 opacity-20 animate-pulse" />
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 opacity-20 animate-pulsse" />
 
         <div className="max-w-6xl mx-auto px-4 py-12 md:py-24 relative">
           <div className="space-y-6 md:space-y-8">
