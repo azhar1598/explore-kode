@@ -212,7 +212,7 @@ const Header = () => {
             {/* <span className="text-4xl">X</span>PERT INSIDER */}
             <span className="text-4xl">S</span>TARTUP{" "}
             {/* <span className="text-4xl">B</span>UZINESS */}
-            <span className="text-4xl">X</span>PERT
+            <span className="text-4xl">X</span>RAY
             {/* <span className="text-4xl">B</span>usinessvala */}
             {/* PERT */}
           </Link>
