@@ -42,6 +42,7 @@ export async function updateSession(request: NextRequest) {
     !request.nextUrl.pathname.startsWith("/login") &&
     request.nextUrl.pathname !== "/" &&
     request.nextUrl.pathname !== "/category" &&
+    !request.nextUrl.pathname.includes("/explore-startups") &&
     request.nextUrl.pathname !== "/business" &&
     !request.nextUrl.pathname.startsWith("/auth") &&
     !request.nextUrl.pathname.startsWith("/register") && // Add this line
