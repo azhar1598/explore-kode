@@ -19,6 +19,7 @@
   }
   &[data-variant="create-project"] {
     background: transparent;
+    color: white;
   }
 }
 
@@ -33,7 +34,7 @@
   &[data-variant="create-project"] {
     background-color: transparent;
 
-    opacity: 20%;
+    /* opacity: 20%; */
     color: white;
   }
   /* background-color: red !important; */

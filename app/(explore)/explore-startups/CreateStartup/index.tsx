@@ -159,10 +159,10 @@ const CreateStartup = ({ onClose }) => {
             }}
             className="space-y-5"
           >
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-2 gap-6">
               <Flex gap={5} direction={"column"}>
                 <label
-                  className="block text-gray-300 text-sm font-medium"
+                  className="block text-gray-400 text-sm font-medium"
                   htmlFor="title"
                 >
                   Project Title
@@ -174,7 +174,7 @@ const CreateStartup = ({ onClose }) => {
                     id="title"
                     name="title"
                     {...form.getInputProps("title")}
-                    className="w-full pr-4 py-1 bg-white/5 border border-gray-700 rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 text-gray-100 transition-all duration-300"
+                    className="w-full pr-4  bg-white/5 border border-gray-700 rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 text-gray-100 transition-all duration-300"
                     placeholder="Enter a captivating title"
                     leftSection={<Lightbulb className=" text-gray-500" />}
                   />
@@ -190,7 +190,7 @@ const CreateStartup = ({ onClose }) => {
 
                 <Select
                   placeholder="Select"
-                  className="w-full  pr-4 py-1 bg-white/5 border border-gray-700 rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 text-gray-100 transition-all duration-300"
+                  className="w-full  pr-4 bg-white/5 border border-gray-700 rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 text-gray-100 transition-all duration-300"
                   data={transformedCategories}
                   variant="create-project"
                   {...form.getInputProps("category")}
@@ -202,13 +202,13 @@ const CreateStartup = ({ onClose }) => {
             </div>
 
             {/* Type and Stage with enhanced select */}
-            <div className="grid grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-3 gap-6">
               <div>
                 <label
                   className="block text-gray-300 mb-2 text-sm font-medium"
                   htmlFor="stage"
                 >
-                  Project Stage
+                  Stage
                 </label>
                 <div className="relative">
                   <Select
@@ -235,6 +235,7 @@ const CreateStartup = ({ onClose }) => {
                   <NumberInput
                     type="text"
                     allowDecimal={false}
+                    allowNegative={false}
                     hideControls
                     variant="create-project"
                     id="title"
@@ -254,7 +255,7 @@ const CreateStartup = ({ onClose }) => {
                   className="block text-gray-300 mb-2 text-sm font-medium"
                   htmlFor="website"
                 >
-                  Project Website (Optional)
+                  Website (Optional)
                 </label>
                 <div className="relative">
                   <TextInput
@@ -271,7 +272,7 @@ const CreateStartup = ({ onClose }) => {
             </div>
 
             {/* Description with animated focus */}
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-6">
               <div>
                 <label
                   className="block text-gray-300 mb-2 text-sm font-medium"
@@ -282,7 +283,7 @@ const CreateStartup = ({ onClose }) => {
                 <Textarea
                   id="description"
                   name="description"
-                  rows={10}
+                  rows={5}
                   variant="create-project"
                   {...form.getInputProps("description")}
                   className="w-full  bg-white/5 border border-gray-700 rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 text-gray-100 transition-all duration-300"
