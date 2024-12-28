@@ -210,9 +210,9 @@ const Header = () => {
             className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"
           >
             {/* <span className="text-4xl">X</span>PERT INSIDER */}
-            <span className="text-4xl">S</span>TARTUP{" "}
+            <span className="text-4xl">S</span>TARTUP
             {/* <span className="text-4xl">B</span>UZINESS */}
-            <span className="text-4xl">X</span>RAY
+            <span className="text-4xl">X</span>TREME
             {/* <span className="text-4xl">B</span>usinessvala */}
             {/* PERT */}
           </Link>
