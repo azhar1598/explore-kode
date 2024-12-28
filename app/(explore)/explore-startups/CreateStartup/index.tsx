@@ -17,12 +17,21 @@ import { z } from "zod";
 import {
   Flex,
   Group,
+  NumberInput,
   Select,
   SimpleGrid,
   Textarea,
   TextInput,
 } from "@mantine/core";
+import { categories } from "@/constants";
 
+const RoleSchema = z.object({
+  title: z.string().nonempty("Role title is required"),
+  details: z.string().nonempty("Role details are required"),
+  paymentType: z.enum(["PAID", "UNPAID", "EQUITY_SPLIT"]),
+});
+
+// First, update the form schema to include the new fields
 const formSchema = z.object({
   title: z.string().nonempty("Title is required"),
   type: z.string().nonempty("Type is required"),
@@ -31,6 +40,9 @@ const formSchema = z.object({
   category: z.string().nonempty("Category is required"),
   teamSize: z.string().nonempty("Team size is required"),
   skills: z.array(z.string()).nonempty("At least one skill is required"),
+  // New fields
+  role: z.string().nonempty("Role title is required"),
+  roles: z.array(RoleSchema).min(1, "At least one role is required"),
 });
 
 const CreateStartup = ({ onClose }) => {
@@ -45,6 +57,7 @@ const CreateStartup = ({ onClose }) => {
       teamSize: "",
       website: "",
       skills: [],
+      roles: [],
     },
   });
   const [currentSkill, setCurrentSkill] = useState("");
@@ -69,60 +82,46 @@ const CreateStartup = ({ onClose }) => {
     // }));
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-    // if (!formData.title.trim()) newErrors.title = "Title is required";
-    // if (!formData.type.trim()) newErrors.type = "Type is required";
-    // if (!formData.stage.trim()) newErrors.stage = "Stage is required";
-    // if (!formData.description.trim())
-    //   newErrors.description = "Description is required";
-    // if (!formData.category.trim()) newErrors.category = "Category is required";
-    // if (!formData.teamSize.trim()) newErrors.teamSize = "Team size is required";
-    // if (formData.skills.length === 0)
-    //   newErrors.skills = "At least one skill is required";
+  const [currentRole, setCurrentRole] = useState({
+    title: "",
+    details: "",
+    paymentType: "PAID",
+  });
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  // Add role to the form
+  const handleAddRole = () => {
+    if (currentRole.title && currentRole.details && currentRole.paymentType) {
+      form.setFieldValue("roles", [...form.values.roles, { ...currentRole }]);
+      // Reset current role
+      setCurrentRole({
+        title: "",
+        details: "",
+        paymentType: "PAID",
+      });
+    }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // if (validateForm()) {
-    //   onSubmit({
-    //     ...formData,
-    //     datePosted: new Date().toLocaleDateString(),
-    //     createdBy: "Current User", // This should be replaced with actual user data
-    //   });
-    // }
+  // Remove role from the form
+  const handleRemoveRole = (index: number) => {
+    form.setFieldValue(
+      "roles",
+      form.values.roles.filter((_, idx) => idx !== index)
+    );
   };
 
   const createStartup = useMutation({
     mutationFn: async () => callApi.post(`/startup`, formData),
 
-    onSuccess: async (res) => {
-      // const { data } = res;
-      // if (data.isValid) {
-      //   router.push(
-      //     `/business/${encodeURIComponent(
-      //       businessName.trim()
-      //     )}?category=${encodeURIComponent(
-      //       selectedCategory?.name
-      //         .toLowerCase()
-      //         .replace(/\s+/g, "")
-      //         .replace(/&/g, "-")
-      //     )}`
-      //   );
-      // } else {
-      //   setError(
-      //     `Please provide a valid business in the ${selectedCategory?.name} category.`
-      //   );
-      // }
-      // console.log("data", data);
-    },
+    onSuccess: async (res) => {},
     onError: (err: Error) => {
       console.log(err.message);
     },
   });
+
+  const transformedCategories = categories.map(({ name }) => ({
+    label: name,
+    value: name.toLowerCase().replace(/ & /g, "-").replace(/ /g, "-"),
+  }));
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 md:px-4">
@@ -160,47 +159,50 @@ const CreateStartup = ({ onClose }) => {
             }}
             className="space-y-5"
           >
-            <Flex gap={5} direction={"column"}>
-              <label
-                className="block text-gray-300 text-sm font-medium"
-                htmlFor="title"
-              >
-                Project Title
-              </label>
-              <Flex>
-                <TextInput
-                  type="text"
-                  variant="create-project"
-                  id="title"
-                  name="title"
-                  {...form.getInputProps("title")}
-                  className="w-full pr-4 py-1 bg-white/5 border border-gray-700 rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 text-gray-100 transition-all duration-300"
-                  placeholder="Enter a captivating title"
-                  leftSection={<Lightbulb className=" text-gray-500" />}
-                />
-              </Flex>
-            </Flex>
-
-            {/* Type and Stage with enhanced select */}
             <div className="grid grid-cols-2 gap-6">
+              <Flex gap={5} direction={"column"}>
+                <label
+                  className="block text-gray-300 text-sm font-medium"
+                  htmlFor="title"
+                >
+                  Project Title
+                </label>
+                <Flex>
+                  <TextInput
+                    type="text"
+                    variant="create-project"
+                    id="title"
+                    name="title"
+                    {...form.getInputProps("title")}
+                    className="w-full pr-4 py-1 bg-white/5 border border-gray-700 rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 text-gray-100 transition-all duration-300"
+                    placeholder="Enter a captivating title"
+                    leftSection={<Lightbulb className=" text-gray-500" />}
+                  />
+                </Flex>
+              </Flex>
               <div>
                 <label
                   className="block text-gray-300 mb-2 text-sm font-medium"
-                  htmlFor="type"
+                  htmlFor="category"
                 >
-                  Project Type
+                  Category
                 </label>
+
                 <Select
-                  placeholder="Pick value"
+                  placeholder="Select"
                   className="w-full  pr-4 py-1 bg-white/5 border border-gray-700 rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 text-gray-100 transition-all duration-300"
-                  data={["React", "Angular", "Vue", "Svelte"]}
+                  data={transformedCategories}
                   variant="create-project"
-                  {...form.getInputProps("type")}
+                  {...form.getInputProps("category")}
                   leftSection={
-                    <TypeOutline className=" h-5 w-5 text-gray-500" />
+                    <Code className=" left-4 top-3.5 h-5 w-5 text-gray-500" />
                   }
                 />
               </div>
+            </div>
+
+            {/* Type and Stage with enhanced select */}
+            <div className="grid grid-cols-3 gap-6">
               <div>
                 <label
                   className="block text-gray-300 mb-2 text-sm font-medium"
@@ -211,7 +213,7 @@ const CreateStartup = ({ onClose }) => {
                 <div className="relative">
                   <Select
                     placeholder="Select stage"
-                    className="w-full  pr-4 py-1 bg-white/5 border border-gray-700 rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 text-gray-100 transition-all duration-300"
+                    className="w-full  pr-4 bg-white/5 border border-gray-700 rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 text-gray-100 transition-all duration-300"
                     data={["React", "Angular", "Vue", "Svelte"]}
                     {...form.getInputProps("stage")}
                     variant="create-project"
@@ -220,48 +222,6 @@ const CreateStartup = ({ onClose }) => {
                     }
                   />
                 </div>
-              </div>
-            </div>
-
-            {/* Description with animated focus */}
-            <div>
-              <label
-                className="block text-gray-300 mb-2 text-sm font-medium"
-                htmlFor="description"
-              >
-                Description
-              </label>
-              <Textarea
-                id="description"
-                name="description"
-                rows={5}
-                variant="create-project"
-                {...form.getInputProps("description")}
-                className="w-full  bg-white/5 border border-gray-700 rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 text-gray-100 transition-all duration-300"
-                placeholder="Describe your project in detail..."
-              />
-            </div>
-
-            {/* Category and Team Size with icons */}
-            <div className="grid grid-cols-2 gap-6">
-              <div>
-                <label
-                  className="block text-gray-300 mb-2 text-sm font-medium"
-                  htmlFor="category"
-                >
-                  Category
-                </label>
-
-                <Select
-                  placeholder="Pick value"
-                  className="w-full  pr-4 py-1 bg-white/5 border border-gray-700 rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 text-gray-100 transition-all duration-300"
-                  data={["React", "Angular", "Vue", "Svelte"]}
-                  variant="create-project"
-                  {...form.getInputProps("category")}
-                  leftSection={
-                    <Code className=" left-4 top-3.5 h-5 w-5 text-gray-500" />
-                  }
-                />
               </div>
 
               <div>
@@ -272,13 +232,15 @@ const CreateStartup = ({ onClose }) => {
                   Team Size
                 </label>
                 <div className="relative">
-                  <TextInput
+                  <NumberInput
                     type="text"
+                    allowDecimal={false}
+                    hideControls
                     variant="create-project"
                     id="title"
                     name="title"
                     {...form.getInputProps("teamSize")}
-                    className="w-full  pr-4 py-1 bg-white/5 border border-gray-700 rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 text-gray-100 transition-all duration-300"
+                    className="w-full  pr-4 bg-white/5 border border-gray-700 rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 text-gray-100 transition-all duration-300"
                     placeholder="Enter a captivating title"
                     leftSection={
                       <Users className=" left-4 top-3.5 h-5 w-5 text-gray-500" />
@@ -286,79 +248,148 @@ const CreateStartup = ({ onClose }) => {
                   />
                 </div>
               </div>
-            </div>
 
-            {/* Website with icon */}
-            <div>
-              <label
-                className="block text-gray-300 mb-2 text-sm font-medium"
-                htmlFor="website"
-              >
-                Project Website (Optional)
-              </label>
-              <div className="relative">
-                <TextInput
-                  type="url"
-                  id="website"
-                  variant="create-project"
-                  {...form.getInputProps("website")}
-                  className="w-full bg-white/5 border border-gray-700 rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 text-gray-100 transition-all duration-300"
-                  placeholder="https://..."
-                  leftSection={
-                    <Globe className=" left-4 top-3.5 h-5 w-5 text-gray-500" />
-                  }
-                />
-              </div>
-            </div>
-
-            {/* Skills with modern tag design */}
-            <div>
-              <label className="block text-gray-300 mb-2 text-sm font-medium">
-                Skills Required
-              </label>
-              <div className="flex gap-3 mb-3">
-                <div className="relative flex-1">
+              <div>
+                <label
+                  className="block text-gray-300 mb-2 text-sm font-medium"
+                  htmlFor="website"
+                >
+                  Project Website (Optional)
+                </label>
+                <div className="relative">
                   <TextInput
-                    type="text"
-                    value={currentSkill}
+                    type="url"
+                    id="website"
                     variant="create-project"
-                    {...form.getInputProps("skills")}
-                    onChange={(e) => setCurrentSkill(e.target.value)}
-                    onKeyPress={(e) =>
-                      e.key === "Enter" &&
-                      (e.preventDefault(), handleSkillAdd())
-                    }
-                    className="w-full py-1 bg-white/5 border border-gray-700 rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 text-gray-100 transition-all duration-300"
-                    placeholder="Add required skills"
-                    leftSection={
-                      <Code className=" left-4 top-3.5 h-5 w-5 text-gray-500" />
-                    }
+                    {...form.getInputProps("website")}
+                    className="w-full bg-white/5 border border-gray-700 rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 text-gray-100 transition-all duration-300"
+                    placeholder="https://..."
+                    leftSection={<Globe className=" h-5 w-5 text-gray-500" />}
                   />
                 </div>
-                <button
-                  type="button"
-                  onClick={handleSkillAdd}
-                  className="px-6 py-3 bg-purple-600/20 text-purple-400 rounded-xl hover:bg-purple-600/30 transition-all duration-300 font-medium"
-                >
-                  Add
-                </button>
               </div>
-              <div className="flex flex-wrap gap-2 mt-3">
-                {form.values.skills.map((skill, index) => (
-                  <span
-                    key={index}
-                    className="px-4 py-2 bg-purple-500/10 text-purple-300 rounded-xl flex items-center gap-2 border border-purple-500/20 hover:border-purple-500/40 transition-colors duration-300"
+            </div>
+
+            {/* Description with animated focus */}
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <label
+                  className="block text-gray-300 mb-2 text-sm font-medium"
+                  htmlFor="description"
+                >
+                  Description
+                </label>
+                <Textarea
+                  id="description"
+                  name="description"
+                  rows={10}
+                  variant="create-project"
+                  {...form.getInputProps("description")}
+                  className="w-full  bg-white/5 border border-gray-700 rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 text-gray-100 transition-all duration-300"
+                  placeholder="Describe your project in detail..."
+                />
+              </div>
+
+              {/* Category and Team Size with icons */}
+
+              <div className="space-y-4">
+                <label className="block text-gray-300 text-sm font-medium">
+                  Team Roles
+                </label>
+
+                {/* Role Input Form */}
+                <div className="space-y-4 p-4 bg-white/5 rounded-xl border border-gray-700">
+                  <TextInput
+                    placeholder="Role Title"
+                    value={currentRole.title}
+                    onChange={(e) =>
+                      setCurrentRole((prev) => ({
+                        ...prev,
+                        title: e.target.value,
+                      }))
+                    }
+                    variant="create-project"
+                    className="w-full  bg-white/5 border border-gray-700 rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 text-gray-100 transition-all duration-300"
+                    leftSection={<Users className="text-gray-500" />}
+                  />
+
+                  <Textarea
+                    placeholder="Role Details"
+                    variant="create-project"
+                    value={currentRole.details}
+                    className="w-full  bg-white/5 border border-gray-700 rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 text-gray-100 transition-all duration-300"
+                    onChange={(e) =>
+                      setCurrentRole((prev) => ({
+                        ...prev,
+                        details: e.target.value,
+                      }))
+                    }
+                    rows={3}
+                  />
+
+                  <div className="flex gap-4">
+                    {["PAID", "UNPAID", "EQUITY_SPLIT"].map((type) => (
+                      <label
+                        key={type}
+                        className="flex items-center space-x-2 cursor-pointer"
+                      >
+                        <input
+                          type="radio"
+                          checked={currentRole.paymentType === type}
+                          onChange={() =>
+                            setCurrentRole((prev) => ({
+                              ...prev,
+                              paymentType: type,
+                            }))
+                          }
+                          className="form-radio text-purple-500 focus:ring-purple-500/20"
+                        />
+                        <span className="text-gray-300">
+                          {type.replace("_", " ")}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleAddRole}
+                    className="px-6 py-2 bg-purple-600/20 text-purple-400 rounded-xl hover:bg-purple-600/30 transition-all duration-300 font-medium"
                   >
-                    {skill}
-                    <button
-                      type="button"
-                      onClick={() => handleSkillRemove(skill)}
-                      className="hover:text-purple-400 transition-colors duration-300"
+                    Add Role
+                  </button>
+                </div>
+
+                {/* Display Added Roles */}
+                <div className="space-y-3">
+                  {form.values.roles.map((role, index) => (
+                    <div
+                      key={index}
+                      className="p-4 bg-purple-500/10 rounded-xl border border-purple-500/20"
                     >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </span>
-                ))}
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h3 className="text-purple-300 font-medium">
+                            {role.title}
+                          </h3>
+                          <p className="text-gray-400 text-sm mt-1">
+                            {role.details}
+                          </p>
+                          <span className="inline-block mt-2 px-3 py-1 bg-purple-500/20 text-purple-300 text-sm rounded-full">
+                            {role.paymentType}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveRole(index)}
+                          className="text-gray-400 hover:text-purple-400 transition-colors"
+                        >
+                          <X className="h-5 w-5" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
