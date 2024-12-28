@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ChevronDown,
   Code,
@@ -25,6 +25,8 @@ import {
   TextInput,
 } from "@mantine/core";
 import { categories } from "@/constants";
+import { createClient } from "@/utils/supabase/client";
+import GoogleSignIn from "@/components/GoogleSignIn";
 
 const RoleSchema = z.object({
   title: z.string().nonempty("Role title is required"),
@@ -58,27 +60,6 @@ const CreateStartup = ({ onClose }) => {
       roles: [],
     },
   });
-  const [currentSkill, setCurrentSkill] = useState("");
-  const [errors, setErrors] = useState({});
-
-  console.log("formData", form.values);
-
-  const handleSkillAdd = () => {
-    // if (currentSkill.trim() && !formData.skills.includes(currentSkill.trim())) {
-    //   setFormData((prev) => ({
-    //     ...prev,
-    //     skills: [...prev.skills, currentSkill.trim()],
-    //   }));
-    //   setCurrentSkill("");
-    // }
-  };
-
-  const handleSkillRemove = (skillToRemove) => {
-    // setFormData((prev) => ({
-    //   ...prev,
-    //   skills: prev.skills.filter((skill) => skill !== skillToRemove),
-    // }));
-  };
 
   const [currentRole, setCurrentRole] = useState({
     title: "",
@@ -122,6 +103,39 @@ const CreateStartup = ({ onClose }) => {
     label: name,
     value: name.toLowerCase().replace(/ & /g, "-").replace(/ /g, "-"),
   }));
+
+  const supabase = createClient();
+
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    fetchUser();
+  }, []);
+
+  if (!user) {
+    return (
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 md:px-4 overflow-hidden">
+        <button
+          onClick={onClose}
+          className="p-2 hover:bg-white/5 rounded-xl transition-colors duration-300"
+        >
+          <X className="absolute top-10 right-10 h-6 w-6 text-gray-400" />
+        </button>
+        <div className="md:w-72 flex flex-col">
+          <p className="text-sm text-gray-400 mb-2">
+            Please sign in to create project
+          </p>
+          <GoogleSignIn />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 md:px-4">

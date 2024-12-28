@@ -46,7 +46,7 @@ export default function GoogleSignIn({ category }: any) {
       supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/business?category=${category}`,
+          redirectTo: ` ${window.location.origin}/business?category=${category}`,
         },
       }),
 

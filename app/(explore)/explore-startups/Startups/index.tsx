@@ -1,3 +1,5 @@
+import callApi from "@/services/apiService";
+import { useQuery } from "@tanstack/react-query";
 import { BookmarkIcon, Copy, ExternalLink, Share2 } from "lucide-react";
 import Link from "next/link";
 
@@ -54,6 +56,18 @@ const Startups = () => {
       skills: ["Flutter", "iOS", "Mobile Development"],
     },
   ];
+
+  const getStartups = useQuery({
+    queryKey: ["startup", name],
+    queryFn: async () => {
+      // if (getBusinessInsights?.data) return;
+      const response = await callApi.get(`/startup`);
+      return response.data;
+    },
+  });
+
+  console.log("getStartups", getStartups?.data);
+
   const listView = true;
   return (
     <>
