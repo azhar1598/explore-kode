@@ -128,4 +128,23 @@
     background-color: #c8102e !important;
     min-width: 100px;
   }
+
+  &[data-variant="create-project"] {
+    padding-left: 1.5rem; /* px-6 */
+    padding-right: 1.5rem; /* px-6 */
+    padding-top: 0.5rem; /* py-2 */
+    padding-bottom: 0.5rem; /* py-2 */
+
+    background: linear-gradient(
+      to right,
+      #7c3aed,
+      #6d28d9
+    ); /* bg-gradient-to-r from-purple-600 to-purple-700 */
+    color: white; /* text-white */
+    border-radius: 0.5rem; /* rounded-lg */
+    display: flex; /* flex */
+    align-items: center; /* items-center */
+    gap: 0.5rem; /* gap-2 */
+    transition: background-color 0.2s ease;
+  }
 }

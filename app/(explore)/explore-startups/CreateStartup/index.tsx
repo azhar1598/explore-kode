@@ -15,6 +15,7 @@ import callApi from "@/services/apiService";
 import { useForm, zodResolver } from "@mantine/form";
 import { z } from "zod";
 import {
+  Button,
   Flex,
   Group,
   NumberInput,
@@ -39,8 +40,6 @@ const formSchema = z.object({
   description: z.string().nonempty("Description is required"),
   category: z.string().nonempty("Category is required"),
   teamSize: z.string().nonempty("Team size is required"),
-  skills: z.array(z.string()).nonempty("At least one skill is required"),
-  // New fields
   role: z.string().nonempty("Role title is required"),
   roles: z.array(RoleSchema).min(1, "At least one role is required"),
 });
@@ -56,7 +55,6 @@ const CreateStartup = ({ onClose }) => {
       category: "",
       teamSize: "",
       website: "",
-      skills: [],
       roles: [],
     },
   });
@@ -110,9 +108,11 @@ const CreateStartup = ({ onClose }) => {
   };
 
   const createStartup = useMutation({
-    mutationFn: async () => callApi.post(`/startup`, formData),
+    mutationFn: async () => callApi.post(`/startup`, form.values),
 
-    onSuccess: async (res) => {},
+    onSuccess: async (res) => {
+      onClose();
+    },
     onError: (err: Error) => {
       console.log(err.message);
     },
@@ -396,20 +396,23 @@ const CreateStartup = ({ onClose }) => {
 
             {/* Submit Buttons */}
             <div className="flex justify-end gap-4 pt-4">
-              <button
+              <Button
                 type="button"
                 onClick={onClose}
+                h={40}
                 className="px-6 py-3 border border-gray-700 rounded-xl text-gray-300 hover:bg-white/5 transition-all duration-300 font-medium"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 type="submit"
-                className="px-6 py-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg hover:from-purple-700 hover:to-purple-800 transition-colors flex items-center gap-2"
+                h={40}
+                loading={createStartup.isPending}
+                variant="create-project"
+                leftSection={<PlusCircle className="h-6 w-6 text-white" />}
               >
-                <PlusCircle className="h-5 w-5" />
                 Create Project
-              </button>
+              </Button>
             </div>
           </form>
         </div>
