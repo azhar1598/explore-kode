@@ -14,6 +14,9 @@ import Startups from "./Startups";
 import SearchStartup from "./SearchStartUp";
 import FilterSection from "./Filters";
 import CreateStartup from "./CreateStartup";
+import { useDebouncedState } from "@mantine/hooks";
+import { useQuery } from "@tanstack/react-query";
+import callApi from "@/services/apiService";
 
 const projects = [
   {
@@ -44,7 +47,7 @@ const projects = [
 ];
 
 const ProjectListing = () => {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useDebouncedState("", 300);
   const [selectedFilters, setSelectedFilters] = useState({
     category: "",
     location: "",
@@ -54,8 +57,21 @@ const ProjectListing = () => {
   });
   const [visibleProjects, setVisibleProjects] = useState([]);
 
+  const getStartups = useQuery({
+    queryKey: ["startup", name, searchTerm],
+    queryFn: async () => {
+      const params = new URLSearchParams({
+        page: String(1),
+        limit: String(10),
+        ...(searchTerm && { search: searchTerm }),
+      });
+      // if (getBusinessInsights?.data) return;
+      const response = await callApi.get(`/startup?${params}`);
+      return response.data;
+    },
+  });
+
   useEffect(() => {
-    // Animate projects appearing one by one
     const timer = setTimeout(() => {
       setVisibleProjects(projects);
     }, 100);
@@ -63,6 +79,8 @@ const ProjectListing = () => {
   }, []);
 
   const [showCreateForm, setShowCreateForm] = useState(false);
+
+  console.log("getStartupssss", getStartups?.data, searchTerm);
 
   return (
     <div className="min-h-screen bg-black text-white overflow-hidden w-[100vw] pt-24 pb-24">

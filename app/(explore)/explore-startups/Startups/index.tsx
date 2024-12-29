@@ -57,17 +57,6 @@ const Startups = () => {
     },
   ];
 
-  const getStartups = useQuery({
-    queryKey: ["startup", name],
-    queryFn: async () => {
-      // if (getBusinessInsights?.data) return;
-      const response = await callApi.get(`/startup`);
-      return response.data;
-    },
-  });
-
-  console.log("getStartups", getStartups?.data);
-
   const listView = true;
   return (
     <>
