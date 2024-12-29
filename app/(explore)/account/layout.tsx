@@ -7,6 +7,7 @@ import "@mantine/core/styles.css";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { FolderGit2, LogOut, Settings, User, Users } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 const navItems = [
@@ -23,6 +24,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const [activeTab, setActiveTab] = useState("profile");
+  const pathname = usePathname();
+
   return (
     <div className="min-h-screen bg-black text-white  w-[100vw]">
       <div
@@ -42,7 +45,7 @@ export default function RootLayout({
                 onClick={() => setActiveTab(item.id)}
                 className={`w-full flex items-center gap-3 px-6 py-4 text-left transition-colors
                 ${
-                  activeTab === item.id
+                  pathname.includes(item.id)
                     ? "bg-blue-500/10 text-blue-400 border-r-2 border-blue-400"
                     : "text-gray-400 hover:bg-blue-500/5 hover:text-gray-200"
                 }`}

@@ -26,7 +26,7 @@ const Header = () => {
 
   const handleSignOut = async () => {
     const res = await supabase.auth.signOut();
-    if (res) setUser(null);
+    localStorage.clear();
     router.push("/");
   };
 

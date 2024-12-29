@@ -19,25 +19,16 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import Image from "next/image";
+import { useUser } from "@/lib/providers/User/UserProvider";
+import { withAuth } from "@/components/common/Auth";
 
-const ProfileLayout = () => {
+const ProfileLayout = ({ user }) => {
   const pathname = usePathname();
 
-  const supabase = createClient();
+  //   const supabase = createClient();
 
-  const [user, setUser] = useState<any>(null);
+  //   const [user, setUser] = useState<any>(null);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setUser(user);
-    };
-    fetchUser();
-  }, []);
-
-  console.log("user", user);
   return (
     <div className="flex-1 px-6">
       {/* Search Bar */}
@@ -138,4 +129,4 @@ const ProfileLayout = () => {
   );
 };
 
-export default ProfileLayout;
+export default withAuth(ProfileLayout);

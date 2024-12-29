@@ -1,4 +1,5 @@
 "use client";
+import { useUser } from "@/lib/providers/User/UserProvider";
 import callApi from "@/services/apiService";
 import { Card } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
@@ -21,6 +22,9 @@ function page() {
     },
   });
 
+  const user = useUser();
+
+  console.log("user", user?.user);
   console.log("getStartups", getStartups?.data?.data);
 
   return (

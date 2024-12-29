@@ -11,18 +11,20 @@ import callApi from "@/services/apiService";
 import axios from "axios";
 import { getToken } from "firebase/messaging";
 import { messaging } from "@/lib/firebase";
+import { useUser } from "@/lib/providers/User/UserProvider";
+import { withAuth } from "@/components/common/Auth";
 
 // import { messaging } from "@/firebase";
 
-export default function BusinessNamePage() {
+function BusinessNamePage({ user }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createClient();
 
-  const [user, setUser] = useState<any>(null);
   const [selectedCategory, setSelectedCategory] = useState<any>(null);
   const [businessName, setBusinessName] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
 
   async function requestPermission() {
     const permission = await Notification.requestPermission();
@@ -45,15 +47,16 @@ export default function BusinessNamePage() {
     requestPermission();
   }, [user]);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setUser(user);
-    };
-    fetchUser();
-  }, []);
+  // useEffect(() => {
+  //   const fetchUser = async () => {
+  //     const {
+  //       data: { user },
+  //     } = await supabase.auth.getUser();
+  //     setUser(user);
+  //     setLoading(false);
+  //   };
+  //   fetchUser();
+  // }, []);
 
   useEffect(() => {
     if (!businessName) return;
@@ -219,3 +222,5 @@ export default function BusinessNamePage() {
     </div>
   );
 }
+
+export default withAuth(BusinessNamePage);

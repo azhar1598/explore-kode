@@ -10,18 +10,18 @@ import { useQuery } from "@tanstack/react-query";
 import { useUser } from "@/lib/providers/User/UserProvider";
 import GoogleSignIn from "@/components/GoogleSignIn";
 
-const StartupVerification = ({ onClose, showCreateForm }) => {
+const StartupVerification = ({ onClose, showCreateForm, user }) => {
   const [hasStartup, setHasStartup] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const router = useRouter();
-  const { user } = useUser();
+  // const user = useUser();
   //   useEffect(() => {
   //     if (!user) return;
   //     if (user?.startupExists) setShowCreateModal(true);
   //   }, [user]);
 
-  console.log("user---->", user, !user?.startupExists, !showCreateModal);
+  // console.log("user---->", user, !user?.startupExists, !showCreateModal);
 
   if (!user) {
     return (

@@ -19,7 +19,7 @@ import { useQuery } from "@tanstack/react-query";
 import callApi from "@/services/apiService";
 import StartupVerification from "./StartupVerification";
 import { Flex, Text } from "@mantine/core";
-import { useUser } from "@/lib/providers/User/UserProvider";
+import { withAuth } from "@/components/common/Auth";
 
 const projects = [
   {
@@ -49,7 +49,7 @@ const projects = [
   },
 ];
 
-const ProjectListing = () => {
+const ProjectListing = ({ user }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilters, setSelectedFilters] = useState({
     category: "",
@@ -85,8 +85,6 @@ const ProjectListing = () => {
 
   console.log("getStartupssss", getStartups?.data, searchTerm);
 
-  const { user } = useUser();
-
   return (
     <div className="min-h-screen bg-black text-white overflow-hidden w-[100vw] pt-24 pb-24">
       <div className="fixed min-h-screen overflow-scroll inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 opacity-20 anismate-pulse  w-[100vw]" />
@@ -120,6 +118,7 @@ const ProjectListing = () => {
       {showCreateForm && (
         <StartupVerification
           showCreateForm={showCreateForm}
+          user={user}
           onClose={() => setShowCreateForm(false)}
         />
         // <CreateStartup onClose={() => setShowCreateForm(false)} />
@@ -128,4 +127,4 @@ const ProjectListing = () => {
   );
 };
 
-export default ProjectListing;
+export default withAuth(ProjectListing);
