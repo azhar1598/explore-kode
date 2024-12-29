@@ -1,52 +1,40 @@
 import React, { useEffect, useState } from "react";
 
-import { PlusCircle, Building } from "lucide-react";
+import { PlusCircle, Building, X } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 
 import { Button } from "@mantine/core";
 import CreateStartup from "../CreateStartup";
 import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { useUser } from "@/lib/providers/User/UserProvider";
+import GoogleSignIn from "@/components/GoogleSignIn";
 
 const StartupVerification = ({ onClose }) => {
   const [hasStartup, setHasStartup] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const supabase = createClient();
   const router = useRouter();
+  const { user } = useUser();
 
-  useEffect(() => {
-    const checkStartup = async () => {
-      try {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-
-        if (!user) {
-          router.push("/login");
-          return;
-        }
-
-        // Check if user has a startup in the database
-        // const { data: startup, error } = await supabase
-        //   .from('startups')
-        //   .select('id')
-        //   .eq('user_id', user.id)
-        //   .single();
-
-        // if (error && error.code !== 'PGRST116') {
-        //   console.error('Error checking startup:', error);
-        // }
-
-        // setHasStartup(!!startup);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error in startup verification:", error);
-        setIsLoading(false);
-      }
-    };
-
-    checkStartup();
-  }, []);
+  if (!user) {
+    return (
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 md:px-4 overflow-hidden">
+        <button
+          onClick={onClose}
+          className="p-2 hover:bg-white/5 rounded-xl transition-colors duration-300"
+        >
+          <X className="absolute top-10 right-10 h-6 w-6 text-gray-400" />
+        </button>
+        <div className="md:w-72 flex flex-col">
+          <p className="text-sm text-gray-400 mb-2">
+            Please sign in to create project
+          </p>
+          <GoogleSignIn />
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -89,11 +77,6 @@ const StartupVerification = ({ onClose }) => {
       </div>
     );
   }
-
-  // If user has a startup, render the team building interface
-  return (
-    <div className="p-6">{/* Your existing team building interface */}</div>
-  );
 };
 
 export default StartupVerification;

@@ -1,5 +1,6 @@
 "use client";
 
+import { UserProvider } from "@/lib/providers/User/UserProvider";
 import { queryClient } from "@/lib/queryClient";
 import { theme } from "@/theme";
 import { MantineProvider } from "@mantine/core";
@@ -13,9 +14,11 @@ export default function RootLayout({
 }>) {
   return (
     <QueryClientProvider client={queryClient}>
-      <MantineProvider theme={theme}>
-        <div className="">{children}</div>
-      </MantineProvider>
+      <UserProvider>
+        <MantineProvider theme={theme}>
+          <div className="">{children}</div>
+        </MantineProvider>
+      </UserProvider>
     </QueryClientProvider>
   );
 }

@@ -95,7 +95,7 @@ const ProjectListing = () => {
           setSearchTerm={setSearchTerm}
           getStartups={getStartups}
         />
-        ``
+
         {/* <FilterSection /> */}
         {/* Project Cards */}
         <Startups />

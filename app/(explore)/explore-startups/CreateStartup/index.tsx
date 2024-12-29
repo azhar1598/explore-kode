@@ -27,6 +27,7 @@ import {
 import { categories } from "@/constants";
 import { createClient } from "@/utils/supabase/client";
 import GoogleSignIn from "@/components/GoogleSignIn";
+import { useUser } from "@/lib/providers/User/UserProvider";
 
 const RoleSchema = z.object({
   title: z.string().nonempty("Role title is required"),
@@ -37,13 +38,11 @@ const RoleSchema = z.object({
 // First, update the form schema to include the new fields
 const formSchema = z.object({
   title: z.string().nonempty("Title is required"),
-  type: z.string().nonempty("Type is required"),
   stage: z.string().nonempty("Stage is required"),
   description: z.string().nonempty("Description is required"),
   category: z.string().nonempty("Category is required"),
   teamSize: z.string().nonempty("Team size is required"),
   role: z.string().nonempty("Role title is required"),
-  roles: z.array(RoleSchema).min(1, "At least one role is required"),
 });
 
 const CreateStartup = ({ onClose }) => {
@@ -51,13 +50,12 @@ const CreateStartup = ({ onClose }) => {
     validate: zodResolver(formSchema),
     initialValues: {
       title: "",
-      type: "",
+
       stage: "",
       description: "",
       category: "",
       teamSize: "",
       website: "",
-      roles: [],
     },
   });
 
@@ -67,7 +65,6 @@ const CreateStartup = ({ onClose }) => {
     paymentType: "PAID",
   });
 
-  // Add role to the form
   const handleAddRole = () => {
     if (currentRole.title && currentRole.details && currentRole.paymentType) {
       form.setFieldValue("roles", [...form.values.roles, { ...currentRole }]);
@@ -80,7 +77,6 @@ const CreateStartup = ({ onClose }) => {
     }
   };
 
-  // Remove role from the form
   const handleRemoveRole = (index: number) => {
     form.setFieldValue(
       "roles",
@@ -104,39 +100,6 @@ const CreateStartup = ({ onClose }) => {
     value: name.toLowerCase().replace(/ & /g, "-").replace(/ /g, "-"),
   }));
 
-  const supabase = createClient();
-
-  const [user, setUser] = useState<any>(null);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setUser(user);
-    };
-    fetchUser();
-  }, []);
-
-  if (!user) {
-    return (
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 md:px-4 overflow-hidden">
-        <button
-          onClick={onClose}
-          className="p-2 hover:bg-white/5 rounded-xl transition-colors duration-300"
-        >
-          <X className="absolute top-10 right-10 h-6 w-6 text-gray-400" />
-        </button>
-        <div className="md:w-72 flex flex-col">
-          <p className="text-sm text-gray-400 mb-2">
-            Please sign in to create project
-          </p>
-          <GoogleSignIn />
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 md:px-4">
       <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 md:rounded-2xl border border-purple-500/20 md:p-8 p-4 w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl shadow-purple-500/10">
@@ -152,7 +115,7 @@ const CreateStartup = ({ onClose }) => {
             <div>
               <h1 className=" text-xl md:text-3xl font-bold bg-gradient-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent flex items-center gap-3">
                 <Sparkles className="h-6 w-6 text-purple-400" />
-                Create New Project
+                List Your Startup
               </h1>
               <p className="text-gray-400 mt-2">
                 Share your vision with the world
@@ -179,7 +142,7 @@ const CreateStartup = ({ onClose }) => {
                   className="block text-gray-400 text-sm font-medium"
                   htmlFor="title"
                 >
-                  Project Title
+                  Startup Name
                 </label>
                 <Flex>
                   <TextInput
@@ -189,7 +152,7 @@ const CreateStartup = ({ onClose }) => {
                     name="title"
                     {...form.getInputProps("title")}
                     className="w-full pr-4  bg-white/5 border border-gray-700 rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 text-gray-100 transition-all duration-300"
-                    placeholder="Enter a captivating title"
+                    placeholder="Enter your startup name"
                     leftSection={<Lightbulb className=" text-gray-500" />}
                   />
                 </Flex>
@@ -256,7 +219,7 @@ const CreateStartup = ({ onClose }) => {
                     name="title"
                     {...form.getInputProps("teamSize")}
                     className="w-full  pr-4 bg-white/5 border border-gray-700 rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 text-gray-100 transition-all duration-300"
-                    placeholder="Enter a captivating title"
+                    placeholder="Enter team size"
                     leftSection={
                       <Users className=" left-4 top-3.5 h-5 w-5 text-gray-500" />
                     }
@@ -292,7 +255,7 @@ const CreateStartup = ({ onClose }) => {
                   className="block text-gray-300 mb-2 text-sm font-medium"
                   htmlFor="description"
                 >
-                  Description
+                  About your startup
                 </label>
                 <Textarea
                   id="description"
@@ -301,18 +264,18 @@ const CreateStartup = ({ onClose }) => {
                   variant="create-project"
                   {...form.getInputProps("description")}
                   className="w-full  bg-white/5 border border-gray-700 rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 text-gray-100 transition-all duration-300"
-                  placeholder="Describe your project in detail..."
+                  placeholder="Describe your startup in detail..."
                 />
               </div>
 
               {/* Category and Team Size with icons */}
 
-              <div className="space-y-4">
+              {/* <div className="space-y-4">
                 <label className="block text-gray-300 text-sm font-medium">
                   Team Roles
                 </label>
 
-                {/* Role Input Form */}
+        
                 <div className="space-y-4 p-4 bg-white/5 rounded-xl border border-gray-700">
                   <TextInput
                     placeholder="Role Title"
@@ -375,7 +338,6 @@ const CreateStartup = ({ onClose }) => {
                   </button>
                 </div>
 
-                {/* Display Added Roles */}
                 <div className="space-y-3">
                   {form.values.roles.map((role, index) => (
                     <div
@@ -405,7 +367,7 @@ const CreateStartup = ({ onClose }) => {
                     </div>
                   ))}
                 </div>
-              </div>
+              </div> */}
             </div>
 
             {/* Submit Buttons */}
@@ -425,7 +387,7 @@ const CreateStartup = ({ onClose }) => {
                 variant="create-project"
                 leftSection={<PlusCircle className="h-6 w-6 text-white" />}
               >
-                Create Project
+                Publish
               </Button>
             </div>
           </form>
