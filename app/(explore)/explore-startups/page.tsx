@@ -17,6 +17,8 @@ import CreateStartup from "./CreateStartup";
 import { useDebouncedState } from "@mantine/hooks";
 import { useQuery } from "@tanstack/react-query";
 import callApi from "@/services/apiService";
+import StartupVerification from "./StartupVerification";
+import { Flex, Text } from "@mantine/core";
 
 const projects = [
   {
@@ -93,23 +95,28 @@ const ProjectListing = () => {
           setSearchTerm={setSearchTerm}
           getStartups={getStartups}
         />
-
+        ``
         {/* <FilterSection /> */}
-
         {/* Project Cards */}
-
         <Startups />
       </div>
 
       {/* Create Project Button with Gradient */}
       <button
         onClick={() => setShowCreateForm(true)}
-        className="fixed flex bottom-6 right-6 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-lg px-6 py-3 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40 transition-all duration-300"
+        className="fixed flex flex-col bottom-6 right-6 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-lg px-6 py-3 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40 transition-all duration-300"
       >
-        <Plus className="mr-2 h-5 w-5" /> Create Project
+        <Flex>
+          {" "}
+          <Plus className="mr-2 h-5 w-5" /> <Text>Build Team</Text>{" "}
+        </Flex>
+        <Text size="xs" fs={"italic"} ml={30}>
+          (for startup founders)
+        </Text>
       </button>
       {showCreateForm && (
-        <CreateStartup onClose={() => setShowCreateForm(false)} />
+        <StartupVerification onClose={() => setShowCreateForm(false)} />
+        // <CreateStartup onClose={() => setShowCreateForm(false)} />
       )}
     </div>
   );
