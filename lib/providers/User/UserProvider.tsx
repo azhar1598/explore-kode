@@ -1,9 +1,25 @@
 import { User } from "@supabase/supabase-js";
 import { createClient } from "@/utils/supabase/client";
 import React, { createContext, useState, useEffect, useContext } from "react";
+import callApi from "@/services/apiService";
+import { Loader2 } from "lucide-react"; // Import loading icon
+
+// Loading component
+const LoadingScreen = () => (
+  <div className="fixed inset-0 flex items-center justify-center bg-background/50 backdrop-blur-sm">
+    <div className="flex flex-col items-center gap-2">
+      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <p className="text-sm text-muted-foreground">Loading user data...</p>
+    </div>
+  </div>
+);
+
+interface ExtendedUser extends User {
+  startupExists: boolean;
+}
 
 interface UserContextType {
-  user: User | null;
+  user: ExtendedUser | null;
   isLoading: boolean;
   error: Error | null;
 }
@@ -19,14 +35,24 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   const supabase = createClient();
 
+  const checkStartupExists = async (userId: string) => {
+    try {
+      const response = await callApi.get(`/startup`);
+      return response.data?.data?.length > 0 ? true : false;
+    } catch (error) {
+      console.error("Error checking startup:", error);
+      return false;
+    }
+  };
+
   useEffect(() => {
-    // Listen for authentication state changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
+        const startupExists = await checkStartupExists(session.user.id);
         setState({
-          user: session.user,
+          user: { ...session.user, startupExists },
           isLoading: false,
           error: null,
         });
@@ -39,21 +65,29 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       }
     });
 
-    // Initial session check
     const initializeAuth = async () => {
       try {
         const {
           data: { session },
-          error,
+          error: authError,
         } = await supabase.auth.getSession();
 
-        if (error) throw error;
+        if (authError) throw authError;
 
-        setState({
-          user: session?.user ?? null,
-          isLoading: false,
-          error: null,
-        });
+        if (session?.user) {
+          const startupExists = await checkStartupExists(session.user.id);
+          setState({
+            user: { ...session.user, startupExists },
+            isLoading: false,
+            error: null,
+          });
+        } else {
+          setState({
+            user: null,
+            isLoading: false,
+            error: null,
+          });
+        }
       } catch (error) {
         setState({
           user: null,
@@ -66,13 +100,17 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
     initializeAuth();
 
-    // Cleanup subscription on unmount
     return () => {
       subscription.unsubscribe();
     };
   }, []);
 
-  return <UserContext.Provider value={state}>{children}</UserContext.Provider>;
+  return (
+    <UserContext.Provider value={state}>
+      {/* {state.isLoading ? <LoadingScreen /> : children} */}
+      {children}
+    </UserContext.Provider>
+  );
 };
 
 export const useUser = (): UserContextType => {
@@ -82,6 +120,3 @@ export const useUser = (): UserContextType => {
   }
   return context;
 };
-
-// Example usage:
-// const { user, isLoading, error } = useUser();

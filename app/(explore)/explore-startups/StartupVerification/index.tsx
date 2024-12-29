@@ -10,12 +10,18 @@ import { useQuery } from "@tanstack/react-query";
 import { useUser } from "@/lib/providers/User/UserProvider";
 import GoogleSignIn from "@/components/GoogleSignIn";
 
-const StartupVerification = ({ onClose }) => {
+const StartupVerification = ({ onClose, showCreateForm }) => {
   const [hasStartup, setHasStartup] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const router = useRouter();
   const { user } = useUser();
+  //   useEffect(() => {
+  //     if (!user) return;
+  //     if (user?.startupExists) setShowCreateModal(true);
+  //   }, [user]);
+
+  console.log("user---->", user, !user?.startupExists, !showCreateModal);
 
   if (!user) {
     return (
@@ -44,7 +50,7 @@ const StartupVerification = ({ onClose }) => {
     );
   }
 
-  if (!hasStartup) {
+  if (!user?.startupExists && !showCreateModal) {
     return (
       <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 md:px-4 overflow-hidden">
         <div className="flex flex-col items-center justify-center min-h-[400px] p-8 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl border border-purple-500/20">
@@ -63,20 +69,26 @@ const StartupVerification = ({ onClose }) => {
             <PlusCircle className="h-5 w-5 mr-2" />
             List My Startup
           </Button>
-
-          {showCreateModal && (
-            <CreateStartup
-              onClose={() => setShowCreateModal(false)}
-              // onSuccess={() => {
-              //   setHasStartup(true);
-              //   setShowCreateModal(false);
-              // }}
-            />
-          )}
         </div>
       </div>
     );
   }
+
+  //   {
+  // (showCreateModal || user?.startupExists) && (
+  return (
+    <>
+      <CreateStartup
+        onClose={onClose}
+        // onSuccess={() => {
+        //   setHasStartup(true);
+        //   setShowCreateModal(false);
+        // }}
+      />
+    </>
+  );
+  // );
+  //   }
 };
 
 export default StartupVerification;

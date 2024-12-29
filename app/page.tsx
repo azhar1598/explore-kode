@@ -22,7 +22,7 @@ const LandingPage = () => {
             </p>
 
             <Link
-              href="/category"
+              href="/explore-startups"
               className="flex w-64 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-xl px-12 py-4 rounded-xl transform transition hover:scale-105"
             >
               {/* <button className=""> */}

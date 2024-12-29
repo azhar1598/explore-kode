@@ -18,35 +18,12 @@ export default function GoogleSignIn({ category }: any) {
 
   const next = searchParams.get("next");
 
-  async function signInWithGoogle() {
-    // setIsGoogleLoading(true);
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: `${window.location.origin}/business?category=${category}`,
-        },
-      });
-
-      if (error) {
-        throw error;
-      }
-    } catch (error) {
-      //   toast({
-      //     title: "Please try again.",
-      //     description: "There was an error logging in with Google.",
-      //     variant: "destructive",
-      //   });
-      // setIsGoogleLoading(false);
-    }
-  }
-
   const loginMutation = useMutation({
     mutationFn: async () =>
       supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: ` ${window.location.origin}/business?category=${category}`,
+          redirectTo: `${window.location.origin}/business?category=${category}`,
         },
       }),
 

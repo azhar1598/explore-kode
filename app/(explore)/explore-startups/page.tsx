@@ -19,6 +19,7 @@ import { useQuery } from "@tanstack/react-query";
 import callApi from "@/services/apiService";
 import StartupVerification from "./StartupVerification";
 import { Flex, Text } from "@mantine/core";
+import { useUser } from "@/lib/providers/User/UserProvider";
 
 const projects = [
   {
@@ -84,6 +85,8 @@ const ProjectListing = () => {
 
   console.log("getStartupssss", getStartups?.data, searchTerm);
 
+  const { user } = useUser();
+
   return (
     <div className="min-h-screen bg-black text-white overflow-hidden w-[100vw] pt-24 pb-24">
       <div className="fixed min-h-screen overflow-scroll inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 opacity-20 anismate-pulse  w-[100vw]" />
@@ -115,7 +118,10 @@ const ProjectListing = () => {
         </Text>
       </button>
       {showCreateForm && (
-        <StartupVerification onClose={() => setShowCreateForm(false)} />
+        <StartupVerification
+          showCreateForm={showCreateForm}
+          onClose={() => setShowCreateForm(false)}
+        />
         // <CreateStartup onClose={() => setShowCreateForm(false)} />
       )}
     </div>
