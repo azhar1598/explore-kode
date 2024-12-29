@@ -47,7 +47,7 @@ const projects = [
 ];
 
 const ProjectListing = () => {
-  const [searchTerm, setSearchTerm] = useDebouncedState("", 300);
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilters, setSelectedFilters] = useState({
     category: "",
     location: "",
@@ -58,7 +58,7 @@ const ProjectListing = () => {
   const [visibleProjects, setVisibleProjects] = useState([]);
 
   const getStartups = useQuery({
-    queryKey: ["startup", name, searchTerm],
+    queryKey: ["startup"],
     queryFn: async () => {
       const params = new URLSearchParams({
         page: String(1),
@@ -88,9 +88,13 @@ const ProjectListing = () => {
 
       <div className="max-w-6xl mx-auto space-y-6 px-4">
         {/* Search Bar with Gradient Border */}
-        <SearchStartup searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+        <SearchStartup
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          getStartups={getStartups}
+        />
 
-        <FilterSection />
+        {/* <FilterSection /> */}
 
         {/* Project Cards */}
 
