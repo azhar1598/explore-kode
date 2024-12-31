@@ -11,7 +11,7 @@ import {
   X,
 } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
-import callApi from "@/services/apiService";
+
 import { useForm, zodResolver } from "@mantine/form";
 import { z } from "zod";
 import {
@@ -28,6 +28,7 @@ import { categories } from "@/constants";
 import { createClient } from "@/utils/supabase/client";
 import GoogleSignIn from "@/components/GoogleSignIn";
 import { useUser } from "@/lib/providers/User/UserProvider";
+import { callApi } from "@/services/apiService";
 
 const RoleSchema = z.object({
   title: z.string().nonempty("Role title is required"),
@@ -45,13 +46,16 @@ const formSchema = z.object({
   role: z.string().nonempty("Role title is required"),
 });
 
-const BuildTeam = ({ onClose }) => {
+const BuildTeam = ({ onClose, user }) => {
   const form = useForm({
     validate: zodResolver(formSchema),
     initialValues: {
       roles: [],
+      startup_id: user?.startupExists?.startupId,
     },
   });
+
+  console.log("user------>", user);
 
   const [currentRole, setCurrentRole] = useState({
     title: "",
@@ -79,7 +83,7 @@ const BuildTeam = ({ onClose }) => {
   };
 
   const createStartup = useMutation({
-    mutationFn: async () => callApi.post(`/startup`, form.values),
+    mutationFn: async () => callApi.post(`/job`, form.values),
 
     onSuccess: async (res) => {
       onClose();
@@ -88,6 +92,8 @@ const BuildTeam = ({ onClose }) => {
       console.log(err.message);
     },
   });
+
+  console.log("form.values======>", form.values);
 
   const transformedCategories = categories.map(({ name }) => ({
     label: name,

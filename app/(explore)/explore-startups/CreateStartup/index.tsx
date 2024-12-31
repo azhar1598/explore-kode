@@ -50,7 +50,6 @@ const CreateStartup = ({ onClose }) => {
     validate: zodResolver(formSchema),
     initialValues: {
       title: "",
-
       stage: "",
       description: "",
       category: "",

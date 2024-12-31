@@ -9,7 +9,6 @@ import { createClient } from "@/utils/supabase/client";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useMutation } from "@tanstack/react-query";
-import callApi from "@/services/apiService";
 
 export default function GoogleSignIn({ category }: any) {
   const supabase = createClient();
@@ -23,7 +22,7 @@ export default function GoogleSignIn({ category }: any) {
       supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/business?category=${category}`,
+          redirectTo: `${window.location.origin}/explore-startups`,
         },
       }),
 

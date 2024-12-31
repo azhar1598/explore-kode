@@ -79,6 +79,7 @@ const StartupVerification = ({ onClose, showCreateForm, user }) => {
     return (
       <BuildTeam
         onClose={onClose}
+        user={user}
         // onSuccess={() => {
         //   setHasStartup(true);
         //   setShowCreateModal(false);
