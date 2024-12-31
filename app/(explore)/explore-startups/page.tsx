@@ -16,10 +16,11 @@ import FilterSection from "./Filters";
 import CreateStartup from "./CreateStartup";
 import { useDebouncedState } from "@mantine/hooks";
 import { useQuery } from "@tanstack/react-query";
-import callApi from "@/services/apiService";
+
 import StartupVerification from "./StartupVerification";
 import { Flex, Text } from "@mantine/core";
 import { withAuth } from "@/components/common/Auth";
+import { callPublicApi } from "@/services/apiService";
 
 const projects = [
   {
@@ -61,7 +62,7 @@ const ProjectListing = ({ user }) => {
   const [visibleProjects, setVisibleProjects] = useState([]);
 
   const getStartups = useQuery({
-    queryKey: ["startup"],
+    queryKey: ["public-startup"],
     queryFn: async () => {
       const params = new URLSearchParams({
         page: String(1),
@@ -69,7 +70,7 @@ const ProjectListing = ({ user }) => {
         ...(searchTerm && { search: searchTerm }),
       });
       // if (getBusinessInsights?.data) return;
-      const response = await callApi.get(`/startup?${params}`);
+      const response = await callPublicApi.get(`/public/startup?${params}`);
       return response.data;
     },
   });

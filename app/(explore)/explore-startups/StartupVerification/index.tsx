@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { useUser } from "@/lib/providers/User/UserProvider";
 import GoogleSignIn from "@/components/GoogleSignIn";
+import BuildTeam from "../BuildTeam";
 
 const StartupVerification = ({ onClose, showCreateForm, user }) => {
   const [hasStartup, setHasStartup] = useState(false);
@@ -71,6 +72,18 @@ const StartupVerification = ({ onClose, showCreateForm, user }) => {
           </Button>
         </div>
       </div>
+    );
+  }
+
+  if (user?.startupExists) {
+    return (
+      <BuildTeam
+        onClose={onClose}
+        // onSuccess={() => {
+        //   setHasStartup(true);
+        //   setShowCreateModal(false);
+        // }}
+      />
     );
   }
 

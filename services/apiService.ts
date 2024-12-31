@@ -14,7 +14,7 @@ export interface ApiResponse<T = any> {
   status: number;
 }
 
-const callApi = {
+export const callApi = {
   async get<T = any>(
     url: string,
     config?: AxiosRequestConfig
@@ -82,4 +82,52 @@ const callApi = {
   },
 };
 
-export default callApi;
+export const publicInstance = axios.create({
+  baseURL: BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+export const callPublicApi = {
+  async get<T = any>(
+    url: string,
+    config?: AxiosRequestConfig
+  ): Promise<ApiResponse<T>> {
+    return await callPublicApi.request<T>(url, "GET", null, config);
+  },
+
+  async post<T = any>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig
+  ): Promise<ApiResponse<T>> {
+    return await callPublicApi.request<T>(url, "POST", data, config);
+  },
+
+  async request<T = any>(
+    url: string,
+    method: "GET" | "POST",
+    data?: any,
+    config?: AxiosRequestConfig
+  ): Promise<ApiResponse<T>> {
+    try {
+      const response: AxiosResponse<T> = await publicInstance.request({
+        url,
+        method,
+        data,
+        ...config,
+      });
+
+      return { data: response.data, status: response.status };
+    } catch (error: any) {
+      if (axios.isAxiosError(error)) {
+        console.log("Public API Error:", error.message);
+        throw error.response?.data || error.message;
+      } else {
+        console.error("Unexpected Error:", error);
+        throw new Error("An unexpected error occurred");
+      }
+    }
+  },
+};

@@ -123,7 +123,8 @@
 //   return context;
 // };
 
-import callApi from "@/services/apiService";
+// import callApi from "@/services/apiService";
+import { callApi } from "@/services/apiService";
 import { createClient } from "@/utils/supabase/client";
 import React, { createContext, useState, useEffect, useContext } from "react";
 
