@@ -7,7 +7,6 @@ import { API_KEY, categories, gradientClasses } from "@/constants";
 import GoogleSignIn from "@/components/GoogleSignIn";
 import { createClient } from "@/utils/supabase/client";
 import { useMutation } from "@tanstack/react-query";
-import callApi from "@/services/apiService";
 import axios from "axios";
 import { getToken } from "firebase/messaging";
 import { messaging } from "@/lib/firebase";

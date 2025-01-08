@@ -24,8 +24,8 @@ import {
 } from "@/constants";
 import LocationStrategy from "@/components/Business/LocationStrategy";
 import { useQuery } from "@tanstack/react-query";
-import callApi from "@/services/apiService";
 import Image from "next/image";
+import { callApi } from "@/services/apiService";
 
 const BusinessInsights = () => {
   const [loading, setLoading] = useState(false);

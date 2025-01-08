@@ -11,7 +11,7 @@ import {
   X,
 } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
-import callApi from "@/services/apiService";
+
 import { useForm, zodResolver } from "@mantine/form";
 import { z } from "zod";
 import {
@@ -28,6 +28,7 @@ import { categories } from "@/constants";
 import { createClient } from "@/utils/supabase/client";
 import GoogleSignIn from "@/components/GoogleSignIn";
 import { useUser } from "@/lib/providers/User/UserProvider";
+import { callApi } from "@/services/apiService";
 
 const RoleSchema = z.object({
   title: z.string().nonempty("Role title is required"),
