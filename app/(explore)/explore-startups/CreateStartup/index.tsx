@@ -191,7 +191,15 @@ const CreateStartup = ({ onClose }) => {
                   <Select
                     placeholder="Select stage"
                     className="w-full  pr-4 bg-white/5 border border-gray-700 rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 text-gray-100 transition-all duration-300"
-                    data={["React", "Angular", "Vue", "Svelte"]}
+                    data={[
+                      "Idea",
+                      "Building MVP",
+                      "MVP Stage",
+                      "Product Market Fit",
+                      "Fundraising Stage",
+                      "Growth Stage",
+                      "Exit Stage",
+                    ]}
                     {...form.getInputProps("stage")}
                     variant="create-project"
                     leftSection={

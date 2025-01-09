@@ -1,9 +1,9 @@
-import callApi from "@/services/apiService";
 import { useQuery } from "@tanstack/react-query";
 import { BookmarkIcon, Copy, ExternalLink, Share2 } from "lucide-react";
 import Link from "next/link";
+import dayjs from "dayjs";
 
-const Startups = () => {
+const Startups = ({ startupsData }) => {
   const projects = [
     {
       type: "Cofounding",
@@ -58,11 +58,14 @@ const Startups = () => {
   ];
 
   const listView = true;
+
+  console.log("startupsData", startupsData);
   return (
     <>
       {listView ? (
         <div className="space-y-6 cursor-pointer">
-          {projects.map((project, index) => (
+          {/* {projects?.map((project, index) => ( */}
+          {startupsData?.map((startup, index) => (
             <Link
               href={`/explore-startups/${index}`}
               key={index}
@@ -76,25 +79,25 @@ const Startups = () => {
                 {/* Tags section */}
                 <div className="flex gap-3 mb-4">
                   <span className="px-4 py-1.5 rounded-full text-sm font-medium bg-gradient-to-r from-yellow-500/20 via-yellow-400/20 to-yellow-500/20 text-yellow-300 border border-yellow-500/30 shadow-sm">
-                    {project.type}
+                    {startup.type}
                   </span>
                   <span className="px-4 py-1.5 rounded-full text-sm font-medium bg-gradient-to-r from-red-500/20 via-red-400/20 to-red-500/20 text-red-300 border border-red-500/30 shadow-sm">
-                    {project.stage}
+                    {startup.stage}
                   </span>
                 </div>
 
                 {/* Title */}
                 <h2 className="text-2xl font-bold text-gray-100 mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r from-purple-400 to-pink-400 transition-all duration-300">
-                  {project.title}
+                  {startup.title}
                 </h2>
 
                 {/* Description */}
                 <p className="text-gray-300 leading-relaxed mb-4">
-                  {project.description}
+                  {startup.description}
                 </p>
 
                 {/* Skills */}
-                <div className="flex flex-wrap gap-2 mb-4">
+                {/* <div className="flex flex-wrap gap-2 mb-4">
                   {project.skills.map((skill, i) => (
                     <span
                       key={i}
@@ -103,20 +106,20 @@ const Startups = () => {
                       {skill}
                     </span>
                   ))}
-                </div>
+                </div> */}
 
                 {/* Info grid */}
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   <div className="p-3 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors duration-300">
                     <span className="text-gray-400">Category</span>
                     <div className="text-gray-200 font-medium mt-1">
-                      {project.category}
+                      {startup.category}
                     </div>
                   </div>
                   <div className="p-3 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors duration-300">
                     <span className="text-gray-400">Team Size</span>
                     <div className="text-gray-200 font-medium mt-1">
-                      {project.teamSize}
+                      {startup.team_size}
                     </div>
                   </div>
                 </div>
@@ -127,11 +130,11 @@ const Startups = () => {
                 <div className="text-sm text-gray-400">
                   Created by{" "}
                   <span className="text-purple-400 hover:text-purple-300 cursor-pointer transition-colors">
-                    {project.createdBy}
+                    {/* {project.createdBy} */}
                   </span>
                 </div>
                 <div className="text-sm text-gray-400">
-                  Posted on {project.datePosted}
+                  Posted on {dayjs(startup.created_at).format("MMMM D, YYYY")}
                 </div>
 
                 <div className="flex gap-2">
@@ -141,7 +144,7 @@ const Startups = () => {
                   <button className="h-11 w-11 flex items-center justify-center rounded-xl border border-gray-700 hover:bg-purple-500/20 hover:border-purple-400 hover:text-purple-400 text-gray-400 transition-all duration-300">
                     <Share2 className="h-5 w-5" />
                   </button>
-                  {project.website && (
+                  {startup.website && (
                     <button className="px-5 py-2.5 flex items-center rounded-xl border border-gray-700 hover:bg-purple-500/20 hover:border-purple-400 hover:text-purple-400 text-gray-400 transition-all duration-300 group">
                       <ExternalLink className="h-5 w-5 mr-2" />
                       <span className="font-medium">Visit Website</span>
@@ -157,7 +160,7 @@ const Startups = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 cursor-pointer">
-          {projects.map((project, index) => (
+          {startupsData.map((startup, index) => (
             <Link
               href={`/explore-startups/${index}`}
               key={index}
@@ -170,36 +173,36 @@ const Startups = () => {
                 {/* Tags section with enhanced gradients */}
                 <div className="flex gap-3 mb-6">
                   <span className="px-4 py-1.5 rounded-full text-sm font-medium bg-gradient-to-r from-yellow-500/20 via-yellow-400/20 to-yellow-500/20 text-yellow-300 border border-yellow-500/30 shadow-sm">
-                    {project.type}
+                    {/* {project.type} */}
                   </span>
                   <span className="px-4 py-1.5 rounded-full text-sm font-medium bg-gradient-to-r from-red-500/20 via-red-400/20 to-red-500/20 text-red-300 border border-red-500/30 shadow-sm">
-                    {project.stage}
+                    {startup.stage}
                   </span>
                 </div>
 
                 {/* Title with gradient hover effect */}
                 <h2 className="text-2xl font-bold text-gray-100 mb-4 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r from-purple-400 to-pink-400 transition-all duration-300">
-                  {project.title}
+                  {startup.title}
                 </h2>
 
                 {/* Description section */}
                 <div className="space-y-2 mb-6">
                   <h3 className="text-gray-400 font-medium">Description</h3>
                   <p className="text-gray-300 leading-relaxed">
-                    {project.description}
+                    {startup.description}
                   </p>
                 </div>
 
                 {/* Skills section with animated tags */}
                 <div className="flex flex-wrap gap-2 mb-6">
-                  {project.skills.map((skill, i) => (
+                  {/* {project.skills.map((skill, i) => (
                     <span
                       key={i}
                       className="px-3 py-1.5 text-sm rounded-lg bg-purple-900/20 text-purple-300 border border-purple-500/30 hover:bg-purple-500/30 hover:border-purple-400 transition-colors duration-300"
                     >
                       {skill}
                     </span>
-                  ))}
+                  ))} */}
                 </div>
 
                 {/* Info grid with glassmorphism effect */}
@@ -207,13 +210,13 @@ const Startups = () => {
                   <div className="p-3 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors duration-300">
                     <span className="text-gray-400">Category</span>
                     <div className="text-gray-200 font-medium mt-1">
-                      {project.category}
+                      {startup.category}
                     </div>
                   </div>
                   <div className="p-3 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors duration-300">
                     <span className="text-gray-400">Team Size</span>
                     <div className="text-gray-200 font-medium mt-1">
-                      {project.teamSize}
+                      {startup.team_size}
                     </div>
                   </div>
                 </div>
@@ -223,11 +226,11 @@ const Startups = () => {
                   <div className="text-sm text-gray-400">
                     Created by{" "}
                     <span className="text-purple-400 hover:text-purple-300 cursor-pointer transition-colors">
-                      {project.createdBy}
+                      {/* {project.createdBy} */}
                     </span>
                   </div>
                   <div className="text-sm text-gray-400">
-                    Posted on {project.datePosted}
+                    Posted on {dayjs(startup.created_at).format("MMMM D, YYYY")}
                   </div>
                 </div>
 
@@ -242,7 +245,7 @@ const Startups = () => {
                     </button>
                   </div>
 
-                  {project.website && (
+                  {startup.website && (
                     <button className="px-5 py-2.5 flex items-center rounded-xl border border-gray-700 hover:bg-purple-500/20 hover:border-purple-400 hover:text-purple-400 text-gray-400 transition-all duration-300 group">
                       <ExternalLink className="h-5 w-5 mr-2" />
                       <span className="font-medium">Visit Website</span>

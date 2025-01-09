@@ -100,7 +100,7 @@ const ProjectListing = ({ user }) => {
 
         {/* <FilterSection /> */}
         {/* Project Cards */}
-        <Startups />
+        <Startups startupsData={getStartups?.data?.data} />
       </div>
 
       {/* Create Project Button with Gradient */}

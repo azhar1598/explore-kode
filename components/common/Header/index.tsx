@@ -99,6 +99,12 @@ const Header = () => {
           >
             <span className="text-4xl">S</span>TARTUP
             <span className="text-4xl">X</span>TREME
+            {/* <span className="text-4xl">F</span>ind{" "}
+            <span className="text-4xl">M</span>e{" "}
+            <span className="text-4xl">S</span>tartup */}
+            {/* <span className="text-4xl">S</span>tartup{" - "}
+            <span className="text-4ssxl">f</span>ound
+            <span className="text-4xl">R</span> */}
           </Link>
 
           {/* Desktop Nav */}
