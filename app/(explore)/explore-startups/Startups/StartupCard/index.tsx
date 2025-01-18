@@ -1,15 +1,27 @@
 import { callPublicApi } from "@/services/apiService";
+import { Badge, Card, Group, Modal, Stack, Text } from "@mantine/core";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import dayjs from "dayjs";
-import { BookmarkIcon, Copy, ExternalLink, Share2 } from "lucide-react";
-import React from "react";
+import {
+  BookmarkIcon,
+  Briefcase,
+  Copy,
+  ExternalLink,
+  Share2,
+} from "lucide-react";
+import React, { useState } from "react";
 
 function StartupCard({ startup }) {
+  const [jobs, setJobs] = useState([]);
+  const [opened, setOpened] = useState(false);
+
   const showJobs = async () => {
     console.log("clicked");
     const res = await callPublicApi.get(`public/job/${startup.id}`);
     console.log("res", res);
+    setJobs(res.data.jobs);
+    setOpened(true);
   };
 
   //   const getJobs = useMutation({
@@ -101,6 +113,10 @@ function StartupCard({ startup }) {
             }}
           >
             <span className="text-gray-400">Available Positions</span>
+            <Group gap="xs">
+              <Briefcase size={16} />
+              <Text fw={500}>View Openings</Text>
+            </Group>
             {/* <div className="text-gray-200 font-medium mt-1">
         {startup.team_size}
       </div> */}
@@ -138,6 +154,44 @@ function StartupCard({ startup }) {
           </button>
         </div>
       </div>
+
+      <Modal
+        opened={opened}
+        onClose={() => setOpened(false)}
+        title={`Open Positions at ${startup.title}`}
+        size="xl"
+        bg={"red"}
+      >
+        <Stack gap="md">
+          {jobs?.map((job) => (
+            <Card key={job.id} shadow="sm" p="lg" radius="md" withBorder>
+              <Group mb="xs">
+                <Text size="lg" fw={600}>
+                  {job.title}
+                </Text>
+                <Badge
+                  variant="gradient"
+                  gradient={
+                    job.payment_type === "PAID"
+                      ? { from: "teal", to: "green" }
+                      : { from: "blue", to: "cyan" }
+                  }
+                >
+                  {job.payment_type === "PAID"
+                    ? "Paid Position"
+                    : "Equity Split"}
+                </Badge>
+              </Group>
+              <Text color="gray.3" mb="md">
+                {job.details}
+              </Text>
+              <Text size="sm" color="dimmed">
+                Posted on {dayjs(job.created_at).format("MMMM D, YYYY")}
+              </Text>
+            </Card>
+          ))}
+        </Stack>
+      </Modal>
     </div>
   );
 }
